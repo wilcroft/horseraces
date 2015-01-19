@@ -12,13 +12,14 @@
 using namespace std;
 
 class Horserace{
-		Race race [NUM_RACES];
+		Race * race [NUM_RACES];
 		list <string> participants;
 		int activeRace;
 
 	public:
 		Horserace();
 		Horserace(list<string>);
+		~Horserace();
 		void addParticipant(string);
 		list<string> getParticipants ();
 		enum HRErrorCode setActiveRace(int);

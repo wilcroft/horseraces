@@ -13,7 +13,7 @@ using namespace std;
 
 class Race{
 	
-		Horse horses[NUM_HORSES_PER_RACE];
+		Horse * horses[NUM_HORSES_PER_RACE];
 		long totalBets;
 		float houseTake;
 		int winner;
@@ -22,7 +22,7 @@ class Race{
 	public:
 		Race();
 		Race(list <string>);
-		//~Race();
+		~Race();
 		void updateOdds();
 		enum HRErrorCode setWinner(int);
 		bool hasWinner();

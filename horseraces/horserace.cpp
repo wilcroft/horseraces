@@ -1,12 +1,28 @@
 #include "horserace.h"
 
 Horserace::Horserace(){
+	int i;
 	activeRace = -1;
+	for (i=0; i<NUM_RACES; i++){
+		race[i]=new Race();
+	}
+
 }
 Horserace::Horserace(list<string> names){
+	int i;
 	activeRace = -1;
 	participants = names;
 	participants.sort();
+	for (i=0; i<NUM_RACES; i++){
+		race[i]=new Race(participants);
+	}
+}
+
+Horserace::~Horserace(){
+	int i;
+	for (i=0;i<NUM_RACES; i++){
+		delete race[i];
+	}
 }
 
 void Horserace::addParticipant(string s){
@@ -64,19 +80,19 @@ int Horserace::getHorseOddsActive(int x, enum HRErrorCode * err){
 enum HRErrorCode Horserace::updateOddsActive(){
 	if (activeRace == -1)
 		return HR_NO_ACTIVE_RACE;
-	race[activeRace].updateOdds();
+	race[activeRace]->updateOdds();
 	return HR_SUCCESS;
 }
 enum HRErrorCode Horserace::setWinnerActive(int x){
 	if (activeRace == -1)
 		return HR_NO_ACTIVE_RACE;
-	return race[activeRace].setWinner(x);
+	return race[activeRace]->setWinner(x);
 }
 
 enum HRErrorCode Horserace::setHouseTakeActive(float f){
 	if (activeRace == -1)
 		return HR_NO_ACTIVE_RACE;
-	return race[activeRace].setHouseTake(f);
+	return race[activeRace]->setHouseTake(f);
 }
 
 
@@ -88,7 +104,7 @@ enum HRErrorCode Horserace::setHouseTakeActive(float f){
 enum HRErrorCode Horserace::setHorseName(int r, int x, string s){
 	if (r < 0 || r >= NUM_RACES)
 		return HR_INVALID_RACE;
-	return race[r].setHorseName(x,s);
+	return race[r]->setHorseName(x,s);
 }
 
 string Horserace::getHorseName(int r, int x, enum HRErrorCode * err){
@@ -98,7 +114,7 @@ string Horserace::getHorseName(int r, int x, enum HRErrorCode * err){
 		return "";
 	}
 
-	return race[r].getHorseName(x,err);
+	return race[r]->getHorseName(x,err);
 }
 
 int Horserace::getHorseOdds(int r, int x, enum HRErrorCode * err){
@@ -108,7 +124,7 @@ int Horserace::getHorseOdds(int r, int x, enum HRErrorCode * err){
 		return -1;
 	}
 
-	return race[r].getHorseOdds(x,err);
+	return race[r]->getHorseOdds(x,err);
 }
 
 enum HRErrorCode Horserace::addBetActive(string name, int h, int bet){
@@ -128,6 +144,6 @@ enum HRErrorCode Horserace::addBet(int r, string name, int h, int bet){
 	while (iter!=participants.end() && *iter!=name) iter++;
 	if (iter == participants.end()) addParticipant(name);
 
-	return race[r].addBet(name, h, bet);		
+	return race[r]->addBet(name, h, bet);		
 }
 	

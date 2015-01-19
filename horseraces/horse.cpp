@@ -14,6 +14,12 @@ Horse::Horse(std::string newname){
 	isWinner = false;
 }
 
+Horse::~Horse(){
+	while (betters.begin() != betters.end()){
+		betters.pop_front();
+	}
+}
+
 std::string Horse::getName(){
 	return name;
 }

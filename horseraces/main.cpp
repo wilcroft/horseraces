@@ -1,6 +1,8 @@
 #include <iostream>
 #include <string>
 #include <list>
+#include <chrono>
+#include <thread>
 
 #include "horserace.h"
 #include "better.h"
@@ -46,9 +48,14 @@ int main (){
 				else {
 					cout << "Race " << i << " is not valid!" << endl;
 				}
-				cin >> opt;
+				this_thread::sleep_for(chrono::milliseconds(750));
 				break;
 			case 2:
+				if (foo.getActiveRace() == -1){
+					cout << "No active race..." << endl;
+				}
+				else{
+				}
 				break;
 			case 3:
 				if (foo.getActiveRace() == -1){
@@ -60,11 +67,43 @@ int main (){
 						cout << foo.getHorseOddsActive(i) << ":1" << endl;
 					}
 				}
+				this_thread::sleep_for(chrono::milliseconds(750));
+				break;
+			case 4:			// Add Bet
+				if (foo.getActiveRace() == -1){
+					cout << "No active race..." << endl;
+				}
+				else{
+					string name;
+					int bet;
+					int horse;
+					cout << "Better Name: " ;
+					cin >> name;
+					cout << endl << "Bet Amount: $" ;
+					cin >> bet;
+					cout << endl << "Horse: ";
+					cin >> horse;
+					cout << endl;
+					err = foo.addBetActive(name, horse, bet);
+					if (err == HR_SUCCESS)
+						cout << "OK!" << endl;
+					else if (err == HR_INVALID_BET)
+						cout << "A bet of $" << bet << " is invalid!" << endl;
+					else if (err == HR_INVALID_HORSE)
+						cout << "Horse Number " << horse << " is invalid!" << endl;
+					else
+						cout << "Unknown error!!!" << endl;
+
+
+				}
 				cin >> opt;
 				break;
-			case 4:
-				break;
 			case 5:
+				if (foo.getActiveRace() == -1){
+					cout << "No active race..." << endl;
+				}
+				else{
+				}
 				break;
 			case 0:
 				fin=true;

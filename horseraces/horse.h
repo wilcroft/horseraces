@@ -23,7 +23,7 @@ class Horse{
 	public:
 		Horse();
 		Horse(std::string);
-
+		~Horse();
 		
 		std::string getName();
 		void setName(std::string);
