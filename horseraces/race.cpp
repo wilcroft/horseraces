@@ -74,6 +74,10 @@ void Race::addBetter(string x){
 	betters.sort();
 }
 
+list<Better> Race::getBetterList(){
+	return betters;
+}
+
 enum HRErrorCode Race::setHorseName(int x, string s){
 	if (x < 0 || x >= NUM_HORSES_PER_RACE)
 		return HR_INVALID_HORSE;

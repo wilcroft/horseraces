@@ -28,6 +28,7 @@ class Race{
 		bool hasWinner();
 		enum HRErrorCode setHouseTake (float);
 		void addBetter(string);
+		list<Better> getBetterList();
 		enum HRErrorCode setHorseName (int, string);
 		string getHorseName (int, enum HRErrorCode * err = nullptr);
 		int getHorseOdds(int, enum HRErrorCode * err = nullptr);

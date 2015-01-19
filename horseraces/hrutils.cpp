@@ -59,3 +59,32 @@ void topmenu(){
 	cout << "5. Add Better" << endl;
 	cout << "0. Exit" << endl;
 }
+
+int getUserInt(){
+	int i=0;
+	string s;
+	bool ok;
+
+	do{
+		cin >> s;
+		ok=true;
+		try{
+			i = stoi(s);
+		}
+		catch(const std::invalid_argument& ia){
+			ok = false;
+			cout << s << " is not a valid integer. Please try another" << endl;
+		}
+	}while (!ok);
+
+	return i;
+
+}
+
+void betTableHeader(){
+	cout << left << setw(15) << "Name" << "\t";
+	for (int i = 0 ; i < NUM_HORSES_PER_RACE; i++){
+		cout << "Horse " << i << "  " ;
+	}
+	cout << endl;
+}

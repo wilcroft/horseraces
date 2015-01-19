@@ -2,6 +2,8 @@
 #define __BETTER_H_
 
 #include <string>
+#include <iostream>
+#include <iomanip>
 #include "constants.h"
 #include "horseraceerrors.h"
 
@@ -22,6 +24,8 @@ class Better{
 		void setName(string);
 		string getName();
 		int addBet(int,int);
+
+		void print();
 
 };
 

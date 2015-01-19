@@ -43,6 +43,8 @@ class Horserace{
 		enum HRErrorCode addBetActive(string, int, int);
 		enum HRErrorCode addBet(int,string,int,int);
 
+		list <Better> getBetterListActive(enum HRErrorCode * err = nullptr);
+		list <Better> getBetterList(int, enum HRErrorCode * err = nullptr);
 
 
 };

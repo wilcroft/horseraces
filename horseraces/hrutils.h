@@ -2,6 +2,11 @@
 #define __HRUTILS_H_
 
 #include <iostream>
+#include <string>
+#include <stdexcept>
+#include <iomanip>
+
+#include "constants.h"
 
 #if  defined(_WIN32) || defined(_WIN64)
 #include <Windows.h>
@@ -13,6 +18,9 @@
 using namespace std;
 void cls();
 void topmenu();
+int getUserInt();
+void betTableHeader();
+
 
 
 #endif

@@ -35,11 +35,12 @@ int main (){
 	while (!fin){
 		cls();
 		topmenu();
-		cin >> i;
+		//cin >> i;
+		i = getUserInt();
 		switch(i){
-			case 1:
+			case 1:			// Choose Race
 				cout << "Enter race number: " ;
-				cin >> i;
+				i = getUserInt();
 				cout << endl;
 				err = foo.setActiveRace(i);
 				if (err == HR_SUCCESS){
@@ -48,16 +49,26 @@ int main (){
 				else {
 					cout << "Race " << i << " is not valid!" << endl;
 				}
-				this_thread::sleep_for(chrono::milliseconds(750));
+				this_thread::sleep_for(chrono::seconds(1));
 				break;
-			case 2:
+			case 2:			// List Betters
 				if (foo.getActiveRace() == -1){
 					cout << "No active race..." << endl;
 				}
 				else{
+					list <Better> betters;
+					betters = foo.getBetterListActive(&err);
+					betTableHeader();
+					for (auto& x : betters){
+						x.print();
+					}
 				}
+				//this_thread::sleep_for(chrono::seconds(2));
+				//char c;'
+				cin.sync();
+				cin.get();
 				break;
-			case 3:
+			case 3:			// List Odds
 				if (foo.getActiveRace() == -1){
 					cout << "No active race..." << endl;
 				}
@@ -67,7 +78,8 @@ int main (){
 						cout << foo.getHorseOddsActive(i) << ":1" << endl;
 					}
 				}
-				this_thread::sleep_for(chrono::milliseconds(750));
+				cin.sync();
+				cin.get();
 				break;
 			case 4:			// Add Bet
 				if (foo.getActiveRace() == -1){
@@ -80,9 +92,9 @@ int main (){
 					cout << "Better Name: " ;
 					cin >> name;
 					cout << endl << "Bet Amount: $" ;
-					cin >> bet;
+					bet = getUserInt();
 					cout << endl << "Horse: ";
-					cin >> horse;
+					horse = getUserInt();
 					cout << endl;
 					err = foo.addBetActive(name, horse, bet);
 					if (err == HR_SUCCESS)
@@ -96,14 +108,15 @@ int main (){
 
 
 				}
-				cin >> opt;
+				this_thread::sleep_for(chrono::seconds(1));
 				break;
-			case 5:
+			case 5:			// Add Better
 				if (foo.getActiveRace() == -1){
 					cout << "No active race..." << endl;
 				}
 				else{
 				}
+				this_thread::sleep_for(chrono::seconds(1));
 				break;
 			case 0:
 				fin=true;

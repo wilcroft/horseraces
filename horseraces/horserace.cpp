@@ -146,4 +146,25 @@ enum HRErrorCode Horserace::addBet(int r, string name, int h, int bet){
 
 	return race[r]->addBet(name, h, bet);		
 }
-	
+
+list<Better> Horserace::getBetterListActive(enum HRErrorCode * err){
+	if (activeRace == -1){
+		if (err != nullptr)
+			(*err) = HR_NO_ACTIVE_RACE;
+		 list<Better> empty;
+		 return empty;
+	}
+	return getBetterList(activeRace, err);
+}
+
+list<Better> Horserace::getBetterList(int r, enum HRErrorCode * err){
+	if (r < 0 || r>= NUM_RACES){
+		if (err != nullptr)
+			(*err) = HR_INVALID_RACE;
+		list<Better> empty;
+		return empty;;
+	}
+	return race[r]->getBetterList();
+}
+
+		
