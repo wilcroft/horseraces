@@ -10,29 +10,9 @@
       <Platform>Win32</Platform>
     </ProjectConfiguration>
   </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="better.cpp" />
-    <ClCompile Include="horse.cpp" />
-    <ClCompile Include="horserace.cpp" />
-    <ClCompile Include="hrutils.cpp" />
-    <ClCompile Include="main.cpp" />
-    <ClCompile Include="race.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="better.h" />
-    <ClInclude Include="constants.h" />
-    <ClInclude Include="horse.h" />
-    <ClInclude Include="horserace.h" />
-    <ClInclude Include="horseraceerrors.h" />
-    <ClInclude Include="hrutils.h" />
-    <ClInclude Include="race.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <Text Include="names.txt" />
-  </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{C5C82311-DB13-448C-8A2F-3B43105BF20F}</ProjectGuid>
-    <RootNamespace>horseraces</RootNamespace>
+    <ProjectGuid>{0B3AC5D4-642C-4404-BD01-3013813851EA}</ProjectGuid>
+    <RootNamespace>horseraceserver</RootNamespace>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -61,7 +41,7 @@
   <PropertyGroup />
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
-      <WarningLevel>Level4</WarningLevel>
+      <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
     </ClCompile>
@@ -83,6 +63,25 @@
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
   </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="..\horseraces\better.h" />
+    <ClInclude Include="..\horseraces\constants.h" />
+    <ClInclude Include="..\horseraces\horse.h" />
+    <ClInclude Include="..\horseraces\horserace.h" />
+    <ClInclude Include="..\horseraces\horseraceerrors.h" />
+    <ClInclude Include="..\horseraces\hrutils.h" />
+    <ClInclude Include="..\horseraces\race.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\horseraces\better.cpp" />
+    <ClCompile Include="..\horseraces\horse.cpp" />
+    <ClCompile Include="..\horseraces\horserace.cpp" />
+    <ClCompile Include="..\horseraces\hrutils.cpp" />
+    <ClCompile Include="..\horseraces\race.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="..\horseraces\names.txt" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

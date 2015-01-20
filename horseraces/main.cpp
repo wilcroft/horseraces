@@ -3,6 +3,7 @@
 #include <list>
 #include <chrono>
 #include <thread>
+#include <fstream>
 
 #include "horserace.h"
 #include "better.h"
@@ -11,27 +12,34 @@
 #include "horse.h"
 #include "hrutils.h"
 
+#define NAMEFILE "names.txt"
+
 using namespace std;
 
 
 int main (){
+	ifstream namefile;
+	filebuf * fb = namefile.rdbuf();
+
 	list <string> names;
 	string opt;
 	enum HRErrorCode err;
 	int i=-1;
 	bool fin = false;
+	
+	fb->open (NAMEFILE, ios::in);
 
-	names.push_back("A");
-	names.push_back("B");
-	names.push_back("C");
-	names.push_back("D");
-	names.push_back("E");
-	names.push_back("F");
+	if (fb->is_open()){
+		while (!namefile.eof()){
+			namefile >> opt;
+			names.push_back(opt);
+		}
+		fb->close();
+	}
+
+	names.sort();
 	Horserace foo(names);
-	Horserace bar(names);
-	bar.addParticipant("G");
-	bar.addParticipant("H");
-
+	
 	while (!fin){
 		cls();
 		topmenu();
@@ -125,7 +133,5 @@ int main (){
 		}
 	}
 
-
-	getchar();
 	return 0;
 }

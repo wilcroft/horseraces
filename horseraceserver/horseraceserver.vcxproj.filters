@@ -15,49 +15,46 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="horse.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="race.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="better.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="horserace.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="main.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="hrutils.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="race.h">
+    <ClInclude Include="..\horseraces\better.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="constants.h">
+    <ClInclude Include="..\horseraces\constants.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="horse.h">
+    <ClInclude Include="..\horseraces\horse.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="better.h">
+    <ClInclude Include="..\horseraces\horserace.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="horserace.h">
+    <ClInclude Include="..\horseraces\horseraceerrors.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="horseraceerrors.h">
+    <ClInclude Include="..\horseraces\hrutils.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="hrutils.h">
+    <ClInclude Include="..\horseraces\race.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <Text Include="names.txt" />
+    <ClCompile Include="..\horseraces\better.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\horseraces\horse.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\horseraces\horserace.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\horseraces\hrutils.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\horseraces\race.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="..\horseraces\names.txt" />
   </ItemGroup>
 </Project>
