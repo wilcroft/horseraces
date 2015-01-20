@@ -71,6 +71,7 @@
     <ClInclude Include="..\horseraces\horseraceerrors.h" />
     <ClInclude Include="..\horseraces\hrutils.h" />
     <ClInclude Include="..\horseraces\race.h" />
+    <ClInclude Include="hrserver.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\horseraces\better.cpp" />
@@ -78,6 +79,7 @@
     <ClCompile Include="..\horseraces\horserace.cpp" />
     <ClCompile Include="..\horseraces\hrutils.cpp" />
     <ClCompile Include="..\horseraces\race.cpp" />
+    <ClCompile Include="servermain.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="..\horseraces\names.txt" />

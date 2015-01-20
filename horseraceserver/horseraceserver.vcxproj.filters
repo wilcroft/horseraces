@@ -36,6 +36,9 @@
     <ClInclude Include="..\horseraces\race.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="hrserver.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\horseraces\better.cpp">
@@ -51,6 +54,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\horseraces\race.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="servermain.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
