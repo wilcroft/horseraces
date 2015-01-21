@@ -82,7 +82,7 @@ int getUserInt(){
 }
 
 void betTableHeader(){
-	cout << left << setw(15) << "Name" << "\t";
+	cout << std::left << std::setw(15) << "Name" << "\t";
 	for (int i = 0 ; i < NUM_HORSES_PER_RACE; i++){
 		cout << "Horse " << i << "  " ;
 	}

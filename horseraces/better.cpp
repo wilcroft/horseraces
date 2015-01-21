@@ -45,9 +45,9 @@ int Better::addBet(int horse, int bet){
 }
 
 void Better::print(){
-	cout << left << setw(15) << name << "\t" ;
+	cout << std::left << std::setw(15) << name << "\t" ;
 	for (int i=0; i<NUM_HORSES_PER_RACE; i++){
-		cout << "$" << setw(8) << bets[i];
+		cout << "$" << std::setw(8) << bets[i];
 	}
-	cout << endl;
+	cout << std::endl;
 }

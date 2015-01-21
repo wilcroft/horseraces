@@ -7,7 +7,10 @@
 #include "constants.h"
 #include "horseraceerrors.h"
 
-using namespace std;
+//using namespace std;
+using std::cout;
+using std::cin;
+using std::string;
 
 class Better{
 		string name;					//name of the better

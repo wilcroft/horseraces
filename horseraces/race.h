@@ -9,7 +9,11 @@
 #include "horse.h"
 #include "better.h"
 
-using namespace std;
+//using namespace std;
+using std::cout;
+using std::cin;
+using std::list;
+using std::string;
 
 class Race{
 	

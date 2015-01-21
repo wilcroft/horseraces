@@ -6,7 +6,10 @@
 #include "constants.h"
 #include "horseraceerrors.h"
 
-using namespace std;
+//using namespace std;
+
+using std::list;
+using std::string;
 
 class Race;
 class Better;

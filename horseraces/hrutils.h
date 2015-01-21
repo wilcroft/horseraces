@@ -15,7 +15,12 @@
 #include <term.h>
 #endif
 
-using namespace std;
+//using namespace std;
+using std::cout;
+using std::cin;
+using std::string;
+using std::endl;
+
 void cls();
 void topmenu();
 int getUserInt();

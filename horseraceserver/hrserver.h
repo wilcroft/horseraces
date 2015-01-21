@@ -5,6 +5,19 @@
 #include <thread>
 #include <fstream>
 
+#include <cstring>
+
+
+
+#if defined(_WIN32) || defined(_WIN64)
+#ifndef WIN32_LEAN_AND_MEAN
+#define WIN32_LEAN_AND_MEAN
+#endif
+#include <WinSock2.h>
+#include <WS2tcpip.h>
+#pragma comment(lib, "ws2_32.lib")
+#endif
+
 #include "../horseraces/horserace.h"
 #include "../horseraces/better.h"
 #include "../horseraces/constants.h"
@@ -13,4 +26,7 @@
 #include "../horseraces/hrutils.h"
 
 #define NAMEFILE "names.txt"
-#define LISTENPORT 0
+#define PORT "23456"
+#define BUFLEN 512
+
+int createListenSocket(SOCKET* sock, WSADATA* wsaData);
