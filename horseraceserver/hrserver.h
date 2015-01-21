@@ -4,6 +4,8 @@
 #include <chrono>
 #include <thread>
 #include <fstream>
+#include <thread>
+#include <mutex>
 
 #include <cstring>
 
@@ -28,5 +30,7 @@
 #define NAMEFILE "names.txt"
 #define PORT "23456"
 #define BUFLEN 512
+#define NUMTHRDS 10
 
 int createListenSocket(SOCKET* sock, WSADATA* wsaData);
+void handleClient(SOCKET* sock, int i, int* rv);

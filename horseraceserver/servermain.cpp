@@ -1,5 +1,8 @@
 #include "hrserver.h"
 
+std::mutex thrdlk;
+bool thrdActv [NUMTHRDS];
+
 int main (void){
 
 	WSADATA wsaData;
@@ -13,6 +16,7 @@ int main (void){
 	SOCKET listensocket = INVALID_SOCKET;
 	SOCKET clientsocket = INVALID_SOCKET;
 	ret = createListenSocket(&listensocket, &wsaData);
+	std::thread * clientThread;
 	/*
 	if (WSAStartup(MAKEWORD(2,2), &wsaData) != 0){
 		cout << "Startup Failed!" << endl;
@@ -65,6 +69,7 @@ int main (void){
 		return -1;
 	}
 	
+	cout << "Waiting for connection" << endl;
 	clientsocket = accept(listensocket, nullptr, nullptr);
 	if (clientsocket == INVALID_SOCKET){
 		cout << "accept() failed!! : " << WSAGetLastError() << endl;
@@ -73,12 +78,23 @@ int main (void){
 		return -1;
 	}
 
+	cout << "Connection recieved!" << endl;
+
 	if (ret !=0 ){
 		cin.sync();
 		cin.get();
 		return ret;
 	}
 
+	thrdlk.lock();
+	clientThread = new std::thread(handleClient, &clientsocket, 0, &ret);
+	thrdActv[0] = true;
+	thrdlk.unlock();
+
+	while (thrdActv);
+
+	//while {clientThread->joinable()
+	/*
 	do{
 		ZeroMemory(inbuf, BUFLEN*sizeof(char));
 		ret = recv(clientsocket, inbuf, BUFLEN, 0);
@@ -96,10 +112,18 @@ int main (void){
 			return -1;
 		}
 
-	}while (ret>0);
+	}while (ret>0);*/
+
+	if (shutdown(clientsocket,SD_SEND) == SOCKET_ERROR){
+		cout << "Shutdown failed! : " << WSAGetLastError() << endl;
+		closesocket(clientsocket);
+		WSACleanup();
+		return -1;
+	}
 
 	cin.sync();
 	cin.get();
+	closesocket(clientsocket);
     closesocket(listensocket);
     WSACleanup();
 	return 0;
@@ -151,4 +175,34 @@ int createListenSocket(SOCKET* sock, WSADATA* wsaData){
 	freeaddrinfo(result);
 
 	return 0;
+}
+
+void handleClient(SOCKET* sock, int i, int * rv){
+	int ret;
+	char inbuf [BUFLEN];
+	do{
+		ZeroMemory(inbuf, BUFLEN*sizeof(char));
+		ret = recv((*sock), inbuf, BUFLEN, 0);
+
+		if (ret > 0){
+			cout << "Recieved Message (" << strlen(inbuf) << ") : \"" << inbuf << "\"" << endl;
+		}
+		else if (ret == 0){
+			cout << "End of Connection." << endl;
+		}
+		else{
+			cout << "recv() failed! : " << WSAGetLastError() << endl;
+			closesocket((*sock));
+			WSACleanup();
+		}
+
+	}while (ret>0);
+	
+	*(rv)=ret;
+	
+	thrdlk.lock();
+	thrdActv[i] = false;
+	thrdlk.unlock();
+
+
 }
