@@ -51,6 +51,10 @@ enum HRErrorCode Race::setWinner(int x){
 	else {
 		winner = x;
 		horses[x]->isWinner = true;
+		updateOdds();
+		for (auto& b: betters){
+			b.setPayout(horses[x]->getOdds()*b.getBet(x));
+		}
 		return HR_SUCCESS;
 	}
 }
@@ -66,6 +70,7 @@ enum HRErrorCode Race::setHouseTake(float x){
 	if (x < 0 || x >=1)
 		return HR_INVALID_HOUSE_TAKE;
 	houseTake = x;
+	updateOdds();
 	return HR_SUCCESS;
 }
 

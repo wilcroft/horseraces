@@ -15,6 +15,7 @@ using std::string;
 class Better{
 		string name;					//name of the better
 		int bets [NUM_HORSES_PER_RACE];	//placed bets by horse
+		int payout;
 
 	public:
 		Better();
@@ -26,9 +27,11 @@ class Better{
 		bool operator=(Better);
 		void setName(string);
 		string getName();
-		int addBet(int,int);
+		enum HRErrorCode addBet(int,int);
+		int getBet(int);
 
 		void print();
+		void setPayout(int);
 
 };
 

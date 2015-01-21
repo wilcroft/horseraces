@@ -2,11 +2,13 @@
 
 Better::Better(){
 		name = "";
+		payout = 0;
 		for (int i = 0; i < NUM_HORSES_PER_RACE; i++)
 			bets[i] = 0;
 }
 Better::Better(string bname){
 		name = bname;
+		payout = 0;
 		for (int i = 0; i < NUM_HORSES_PER_RACE; i++)
 			bets[i] = 0;
 }
@@ -36,12 +38,19 @@ void Better::setName(string bname){
 string Better::getName(){
 	return name;
 }
-int Better::addBet(int horse, int bet){
+enum HRErrorCode Better::addBet(int horse, int bet){
+	if (horse < 0 || horse >= NUM_HORSES_PER_RACE){
+			return HR_INVALID_HORSE;
+	}
+	bets[horse]+=bet;
+	return HR_SUCCESS;
+}
+
+int Better::getBet(int horse){
 	if (horse < 0 || horse >= NUM_HORSES_PER_RACE){
 			return -1;
 	}
-	bets[horse]+=bet;
-	return 0;
+	return bets[horse];
 }
 
 void Better::print(){
@@ -50,4 +59,7 @@ void Better::print(){
 		cout << "$" << std::setw(8) << bets[i];
 	}
 	cout << std::endl;
+}
+void Better::setPayout(int x){
+	payout = x;
 }

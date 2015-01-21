@@ -34,3 +34,4 @@ void Horse::addBet(Better * ptr, int bet){
 	betters.push_back(ptr);
 	bets += bet;
 }
+
