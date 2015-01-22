@@ -1,6 +1,7 @@
 #include "hrserver.h"
 
 std::mutex thrdlk;
+std::mutex iolk;
 bool thrdActv [NUMTHRDS];
 
 int main (void){
@@ -8,15 +9,18 @@ int main (void){
 	WSADATA wsaData;
 
 	int ret;
-	char inbuf [BUFLEN];
+//	char inbuf [BUFLEN];
+
+
 
 //	struct addrinfo* result = nullptr;
 //	struct addrinfo* ptr = nullptr;
 //	struct addrinfo hints;
 	SOCKET listensocket = INVALID_SOCKET;
-	SOCKET clientsocket = INVALID_SOCKET;
+	//SOCKET clientsocket = INVALID_SOCKET;
+	SOCKET * clientsocket;
 	ret = createListenSocket(&listensocket, &wsaData);
-	std::thread * clientThread;
+	std::thread * clientThread [NUMTHRDS];
 	/*
 	if (WSAStartup(MAKEWORD(2,2), &wsaData) != 0){
 		cout << "Startup Failed!" << endl;
@@ -62,37 +66,45 @@ int main (void){
 */
 	cout << "Set-up OK!" << endl;
 
-	if ( listen( listensocket, SOMAXCONN ) == SOCKET_ERROR ) {
+
+	if ( listen( listensocket, NUMTHRDS ) == SOCKET_ERROR ) {
 		cout << "listen() failed!! : " << WSAGetLastError() << endl;
 		closesocket(listensocket);
 		WSACleanup();
 		return -1;
 	}
-	
 	cout << "Waiting for connection" << endl;
-	clientsocket = accept(listensocket, nullptr, nullptr);
-	if (clientsocket == INVALID_SOCKET){
-		cout << "accept() failed!! : " << WSAGetLastError() << endl;
-		closesocket(listensocket);
-		WSACleanup();
-		return -1;
+	while (true){
+		clientsocket = new SOCKET;
+		(*clientsocket) = INVALID_SOCKET;
+		(*clientsocket) = accept(listensocket, nullptr, nullptr);
+		if ((*clientsocket) == INVALID_SOCKET){
+			cout << "accept() failed!! : " << WSAGetLastError() << endl;
+			closesocket(listensocket);
+			WSACleanup();
+			return -1;
+		}
+
+		cout << "Connection recieved!" << endl;
+
+		if (ret !=0 ){
+			cin.sync();
+			cin.get();
+			return ret;
+		}
+
+		thrdlk.lock();
+		for (int i = 0; i<NUMTHRDS;i++){
+			if (thrdActv[i]==false){
+				clientThread[i] = new std::thread(handleClient, clientsocket, i, &ret);
+				thrdActv[i] = true;
+				break;
+			}
+		}
+		thrdlk.unlock();
+
+	//while (thrdActv);
 	}
-
-	cout << "Connection recieved!" << endl;
-
-	if (ret !=0 ){
-		cin.sync();
-		cin.get();
-		return ret;
-	}
-
-	thrdlk.lock();
-	clientThread = new std::thread(handleClient, &clientsocket, 0, &ret);
-	thrdActv[0] = true;
-	thrdlk.unlock();
-
-	while (thrdActv);
-
 	//while {clientThread->joinable()
 	/*
 	do{
@@ -112,18 +124,18 @@ int main (void){
 			return -1;
 		}
 
-	}while (ret>0);*/
+	}while (ret>0);
 
 	if (shutdown(clientsocket,SD_SEND) == SOCKET_ERROR){
 		cout << "Shutdown failed! : " << WSAGetLastError() << endl;
 		closesocket(clientsocket);
 		WSACleanup();
 		return -1;
-	}
+	}*/
 
 	cin.sync();
 	cin.get();
-	closesocket(clientsocket);
+//	closesocket(clientsocket);
     closesocket(listensocket);
     WSACleanup();
 	return 0;
@@ -136,6 +148,7 @@ int createListenSocket(SOCKET* sock, WSADATA* wsaData){
 	struct addrinfo* result = nullptr;
 	struct addrinfo* ptr = nullptr;
 	struct addrinfo hints;
+	int sockcount = 0;
 	//SOCKET listensocket = INVALID_SOCKET;
 	(*sock) = INVALID_SOCKET;
 
@@ -155,6 +168,19 @@ int createListenSocket(SOCKET* sock, WSADATA* wsaData){
 		WSACleanup();
 		return -1;
 	}
+	if (result == nullptr){
+		cout << " bad interface: " << endl;
+		WSACleanup();
+		return -1;
+	}
+
+	ptr = result;
+	while (ptr != nullptr){
+		sockcount++;
+		ptr = ptr->ai_next;
+	}
+
+	cout << "Found " << sockcount << " addresses!" << endl;
 
 	(*sock) = socket(result->ai_family,result->ai_socktype, result->ai_protocol);
 
@@ -199,10 +225,39 @@ void handleClient(SOCKET* sock, int i, int * rv){
 	}while (ret>0);
 	
 	*(rv)=ret;
+
+	if (shutdown((*sock),SD_SEND) == SOCKET_ERROR){
+		cout << "Shutdown failed! : " << WSAGetLastError() << endl;
+		closesocket((*sock));
+		WSACleanup();
+		(*rv) = -1;
+	}
 	
+	closesocket((*sock));
+	delete sock;
 	thrdlk.lock();
 	thrdActv[i] = false;
 	thrdlk.unlock();
 
 
+}
+list <string> getNamesFromFile(string s){
+	std::ifstream namefile;
+	std::filebuf * fb = namefile.rdbuf();
+
+	list <string> names;
+	string temp;
+	
+	fb->open (s, std::ios::in);
+
+	if (fb->is_open()){
+		while (!namefile.eof()){
+			namefile >> temp;
+			names.push_back(temp);
+		}
+		fb->close();
+	}
+
+	names.sort();
+	return names;
 }

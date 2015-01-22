@@ -34,3 +34,4 @@
 
 int createListenSocket(SOCKET* sock, WSADATA* wsaData);
 void handleClient(SOCKET* sock, int i, int* rv);
+list<string> getNamesFromFile(string s = NAMEFILE);
