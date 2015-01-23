@@ -50,6 +50,24 @@ void Horserace::setNoActiveRace(){
 	activeRace = -1;
 }
 
+int Horserace::getHouseWinningsAll(){
+	int sum=0;
+	for (int i = 0; i < NUM_RACES; i++){
+		sum += race[i]->getHouseWinnings();
+	}
+	return sum;
+}
+enum HRErrorCode Horserace::setHouseTakeAll(float f){
+	if (f < 0 || f >= 1){
+		return HR_INVALID_HOUSE_TAKE;
+	}
+	else{
+		for (int i = 0; i < NUM_RACES; i++)
+			race[i]->setHouseTake(f);
+	}
+	return HR_SUCCESS;
+}
+
 /*
  *	Active-Race Methods
  */
@@ -89,10 +107,54 @@ enum HRErrorCode Horserace::setWinnerActive(int x){
 	return race[activeRace]->setWinner(x);
 }
 
+int Horserace::getWinnerActive(enum HRErrorCode * err){
+	if (activeRace == -1){
+		if (err!=nullptr)
+				(*err)=HR_NO_ACTIVE_RACE;
+		return -1;
+	}
+	return race[activeRace]->getWinner();
+}
+
 enum HRErrorCode Horserace::setHouseTakeActive(float f){
 	if (activeRace == -1)
 		return HR_NO_ACTIVE_RACE;
 	return race[activeRace]->setHouseTake(f);
+}
+
+float Horserace::getHouseTakeActive(enum HRErrorCode * err){
+	if (activeRace == -1){
+		if (err!=nullptr)
+				(*err)=HR_NO_ACTIVE_RACE;
+		return -1;
+	}
+	return race[activeRace]->getHouseTake();
+}
+
+int Horserace::getHouseWinningsActive(enum HRErrorCode * err){
+		if (activeRace == -1){
+		if (err!=nullptr)
+				(*err)=HR_NO_ACTIVE_RACE;
+		return -1;
+	}
+	return race[activeRace]->getHouseWinnings();
+}
+
+enum HRErrorCode Horserace::addBetActive(string name, int h, int bet){
+	if (activeRace == -1)
+		return HR_NO_ACTIVE_RACE;
+
+	return addBet(activeRace,name,h,bet);
+}
+
+list<Better> Horserace::getBetterListActive(enum HRErrorCode * err){
+	if (activeRace == -1){
+		if (err != nullptr)
+			(*err) = HR_NO_ACTIVE_RACE;
+		 list<Better> empty;
+		 return empty;
+	}
+	return getBetterList(activeRace, err);
 }
 
 
@@ -127,11 +189,52 @@ int Horserace::getHorseOdds(int r, int x, enum HRErrorCode * err){
 	return race[r]->getHorseOdds(x,err);
 }
 
-enum HRErrorCode Horserace::addBetActive(string name, int h, int bet){
-	if (activeRace == -1)
-		return HR_NO_ACTIVE_RACE;
+enum HRErrorCode Horserace::updateOdds(int r){
+	if (r < 0 || r >= NUM_RACES)
+		return HR_INVALID_RACE;
+	race[r]->updateOdds();
+	return HR_SUCCESS;
+}
 
-	return addBet(activeRace,name,h,bet);
+enum HRErrorCode Horserace::setWinner(int r, int h){
+	if (r < 0 || r >= NUM_RACES)
+		return HR_INVALID_RACE;
+	return race[r]->setWinner(h);
+}
+
+int Horserace::getWinner(int r, enum HRErrorCode * err){
+	if (r < 0 || r>= NUM_RACES){
+		if (err != nullptr)
+			(*err) = HR_INVALID_RACE;
+		return -1;
+	}
+	return race[r]->getWinner();
+}
+
+enum HRErrorCode Horserace::setHouseTake(int r, float f){
+	if (r < 0 || r >= NUM_RACES)
+		return HR_INVALID_RACE;
+	return race[r]->setHouseTake(f);
+}
+
+float Horserace::getHouseTake(int r, enum HRErrorCode * err){
+	if (r < 0 || r>= NUM_RACES){
+		if (err != nullptr)
+			(*err) = HR_INVALID_RACE;
+		return -1;
+	}
+
+	return race[r]->getHouseTake();
+}
+
+int Horserace::getHouseWinnings(int r, enum HRErrorCode * err){
+	if (r < 0 || r>= NUM_RACES){
+		if (err != nullptr)
+			(*err) = HR_INVALID_RACE;
+		return -1;
+	}
+
+	return race[r]->getHouseWinnings();
 }
 
 enum HRErrorCode Horserace::addBet(int r, string name, int h, int bet){
@@ -145,16 +248,6 @@ enum HRErrorCode Horserace::addBet(int r, string name, int h, int bet){
 	if (iter == participants.end()) addParticipant(name);
 
 	return race[r]->addBet(name, h, bet);		
-}
-
-list<Better> Horserace::getBetterListActive(enum HRErrorCode * err){
-	if (activeRace == -1){
-		if (err != nullptr)
-			(*err) = HR_NO_ACTIVE_RACE;
-		 list<Better> empty;
-		 return empty;
-	}
-	return getBetterList(activeRace, err);
 }
 
 list<Better> Horserace::getBetterList(int r, enum HRErrorCode * err){

@@ -3,6 +3,7 @@
 
 #include <string>
 #include <list>
+#include <mutex>
 #include "constants.h"
 #include "horseraceerrors.h"
 
@@ -22,6 +23,7 @@ class Horse{
 		int odds;
 		bool isWinner;
 		list <Better*> betters;
+		std::mutex mtx;
 	
 	public:
 		Horse();

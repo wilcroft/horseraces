@@ -4,6 +4,8 @@
 #include <string>
 #include <iostream>
 #include <iomanip>
+#include <mutex>
+
 #include "constants.h"
 #include "horseraceerrors.h"
 
@@ -16,6 +18,7 @@ class Better{
 		string name;					//name of the better
 		int bets [NUM_HORSES_PER_RACE];	//placed bets by horse
 		int payout;
+		//std::mutex mtx;
 
 	public:
 		Better();

@@ -88,3 +88,21 @@ void betTableHeader(){
 	}
 	cout << endl;
 }
+
+string strToken(string * str, char delim){
+	//find the delimiter
+	size_t loc = str->find(delim);
+	//if delimiter is first character, remove it and look again
+	while (loc == 0 && loc != string::npos){
+		str->erase(str->begin());
+		loc = str->find(delim);
+	}
+	string tok = str->substr(0,loc);
+	//if not found, copy to tok and erase str
+	if (loc == string::npos)
+		*str = "";
+	// if found, copy token and remove it from str
+	else
+		str->erase(0,loc+1);
+	return tok;
+}

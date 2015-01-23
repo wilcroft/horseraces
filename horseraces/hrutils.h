@@ -26,6 +26,7 @@ void topmenu();
 int getUserInt();
 void betTableHeader();
 
+string strToken(string * str, char delim = ' ');
 
 
 #endif

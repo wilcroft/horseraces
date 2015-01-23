@@ -33,5 +33,6 @@
 #define NUMTHRDS 10
 
 int createListenSocket(SOCKET* sock, WSADATA* wsaData);
-void handleClient(SOCKET* sock, int i, int* rv);
+void handleClient(SOCKET* sock, int i, Horserace* hr);
+void handleRequest(string req, Horserace * hr, SOCKET* sock);
 list<string> getNamesFromFile(string s = NAMEFILE);

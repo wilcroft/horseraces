@@ -4,7 +4,8 @@ Race::Race(){
 	int i;
 	totalBets = 0;
 	winner = -1;
-	houseTake = (float)0.15;
+	houseTake = (float)DEFAULT_HOUSEPCT;
+	houseWinnings = 0;
 	for (i=0; i < NUM_HORSES_PER_RACE; i++){
 		horses[i]= new Horse();
 	}
@@ -13,7 +14,8 @@ Race::Race(list <string> names){
 	int i;
 	totalBets = 0;
 	winner = -1;
-	houseTake = (float)0.15;
+	houseTake = (float)DEFAULT_HOUSEPCT;
+	houseWinnings = 0;
 	for (i = 0; i < NUM_HORSES_PER_RACE; i++){
 		horses[i]= new Horse();
 	}
@@ -55,6 +57,7 @@ enum HRErrorCode Race::setWinner(int x){
 		for (auto& b: betters){
 			b.setPayout(horses[x]->getOdds()*b.getBet(x));
 		}
+		houseWinnings = totalBets - horses[x]->getOdds()*horses[x]->bets;
 		return HR_SUCCESS;
 	}
 }
@@ -66,12 +69,20 @@ bool Race::hasWinner(){
 		return false;
 }
 
+int Race::getWinner(){
+	return winner;
+}
+
 enum HRErrorCode Race::setHouseTake(float x){
 	if (x < 0 || x >=1)
 		return HR_INVALID_HOUSE_TAKE;
 	houseTake = x;
 	updateOdds();
 	return HR_SUCCESS;
+}
+
+float Race::getHouseTake(){
+	return houseTake;
 }
 
 void Race::addBetter(string x){
@@ -134,4 +145,8 @@ enum HRErrorCode Race::addBet(string name, int h, int bet){
 
 	return HR_SUCCESS;
 
+}
+
+int Race::getHouseWinnings(){
+	return houseWinnings;
 }
