@@ -63,3 +63,6 @@ void Better::print(){
 void Better::setPayout(int x){
 	payout = x;
 }
+int Better::getPayout(){
+	return payout;
+}

@@ -35,6 +35,7 @@ class Better{
 
 		void print();
 		void setPayout(int);
+		int getPayout();
 
 };
 

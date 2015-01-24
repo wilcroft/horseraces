@@ -28,8 +28,6 @@
 #include "../horseraces/hrutils.h"
 
 #define NAMEFILE "names.txt"
-#define PORT "23456"
-#define BUFLEN 512
 #define NUMTHRDS 10
 
 int createListenSocket(SOCKET* sock, WSADATA* wsaData);
