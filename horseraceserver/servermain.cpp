@@ -223,8 +223,73 @@ void handleRequest(string req, Horserace * hr, SOCKET* sock){
 		buf="OK " + std::to_string(active);
 		send(*sock, buf.c_str(), buf.length(),0);
 	}
-	else if (op == "GH");
-	else if (op == "Gh");
+	else if (op == "GH"){
+		int r = std::stoi(strToken(&req));
+		string hstr = strToken(&req);
+		enum HRErrorCode err;
+		if (hstr == "" || hstr == "\n"){
+			list<string> hnames;
+			err = HR_SUCCESS;
+			int i = 0;
+			hr->lock();
+			while (err == HR_SUCCESS && i<NUM_HORSES_PER_RACE){
+				hnames.push_back(hr->getHorseName(r,i,&err));
+				i++;
+			}
+			hr->unlock();
+			if (err == HR_SUCCESS){
+				buf = "OK " + NUM_HORSES_PER_RACE;
+				send(*sock, buf.c_str(), buf.length(),0);
+				for (auto& x : hnames)
+					send(*sock, x.c_str(), x.length(),0);	
+			}
+			else{
+				buf = "ER " + err;
+				send(*sock, buf.c_str(), buf.length(),0);
+			}
+		}
+		else{
+			string hname = hr->getHorseName(r,std::stoi(hstr),&err);
+			if (err == HR_SUCCESS)
+				buf = "OK " + hname;
+			else
+				buf = "ER " + err;
+			send(*sock, buf.c_str(), buf.length(),0);
+		}
+	}
+	else if (op == "Gh"){
+		string hstr = strToken(&req);
+		enum HRErrorCode err;
+		if (hstr == "" || hstr == "\n"){
+			list<string> hnames;
+			err = HR_SUCCESS;
+			int i = 0;
+			hr->lock();
+			while (err == HR_SUCCESS && i<NUM_HORSES_PER_RACE){
+				hnames.push_back(hr->getHorseNameActive(i,&err));
+				i++;
+			}
+			hr->unlock();
+			if (err == HR_SUCCESS){
+				buf = "OK " + NUM_HORSES_PER_RACE;
+				send(*sock, buf.c_str(), buf.length(),0);
+				for (auto& x : hnames)
+					send(*sock, x.c_str(), x.length(),0);	
+			}
+			else{
+				buf = "ER " + err;
+				send(*sock, buf.c_str(), buf.length(),0);
+			}
+		}
+		else{
+			string hname = hr->getHorseNameActive(std::stoi(hstr),&err);
+			if (err == HR_SUCCESS)
+				buf = "OK " + hname;
+			else
+				buf = "ER " + err;
+			send(*sock, buf.c_str(), buf.length(),0);
+		}
+	}
 	else if (op == "GP"){
 		list<string> names = hr->getParticipants();
 		int size = names.size();

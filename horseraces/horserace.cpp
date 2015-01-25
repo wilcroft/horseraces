@@ -25,9 +25,19 @@ Horserace::~Horserace(){
 	}
 }
 
+void Horserace::lock(){
+	mtx.lock();
+}
+
+void Horserace::unlock(){
+	mtx.unlock();
+}
+
 void Horserace::addParticipant(string s){
+	mtx.lock();
 	participants.push_back(s);
 	participants.sort();
+	mtx.unlock();
 }
 
 list<string> Horserace::getParticipants(){
@@ -38,7 +48,9 @@ enum HRErrorCode Horserace::setActiveRace(int x){
 	if (x < 0 || x >= NUM_RACES){
 		return HR_INVALID_RACE;
 	}
+	mtx.lock();
 	activeRace = x;
+	mtx.unlock();
 	return HR_SUCCESS;
 }
 
@@ -47,7 +59,9 @@ int Horserace::getActiveRace(){
 }
 
 void Horserace::setNoActiveRace(){
+	mtx.lock();
 	activeRace = -1;
+	mtx.unlock();
 }
 
 int Horserace::getHouseWinningsAll(){

@@ -27,7 +27,16 @@ enum HRErrorCode getActiveRace(int* r, SOCKET * sock){
 		return (enum HRErrorCode) std::stoi(buf);
 	}
 }
-
+/************************************
+ * getAllHorseNames()
+ *		Get the names of all horses for a given race as a list of strings
+ * 
+ * r: the returned value of the active race
+ * sock: the active socket connected to the server
+ *
+ * Returns HR_SUCCESS (0) on success, or the appropriate error from the server
+ *
+ ************************************/
 enum HRErrorCode getAllHorseNames(int r, list<string> * s, SOCKET * sock);
 enum HRErrorCode getAllHorseNamesActive(list<string> * s, SOCKET * sock);
 enum HRErrorCode getHorseName(int r, int h, string * s, SOCKET * sock);

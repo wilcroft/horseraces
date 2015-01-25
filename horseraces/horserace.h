@@ -26,6 +26,8 @@ class Horserace{
 		Horserace();
 		Horserace(list<string>);
 		~Horserace();
+		void lock();
+		void unlock();
 		void addParticipant(string);
 		list<string> getParticipants ();
 		enum HRErrorCode setActiveRace(int);
