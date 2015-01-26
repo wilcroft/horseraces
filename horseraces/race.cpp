@@ -124,7 +124,7 @@ int Race::getHorseOdds (int x, enum HRErrorCode * err){
 }
 
 enum HRErrorCode Race::addBet(string name, int h, int bet){
-	if (h  < 0 || h > NUM_HORSES_PER_RACE)
+	if (h  < 0 || h >= NUM_HORSES_PER_RACE)
 		return HR_INVALID_HORSE;
 
 	if (bet < 0)

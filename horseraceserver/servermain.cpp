@@ -607,6 +607,9 @@ void writePayoutListToFile(Horserace * hr, int r,string fname){
 			payfile << "$" << std::to_string(x.getPayout()) << endl;
 		}
 	}
+	payfile << endl; 
+	payfile << std::right << std::setw(35) << "House Winnings: ";
+	payfile << "$" << std::to_string(hr->getHouseWinnings(r)) << endl;
 	fb->close();
 	paylk[r].unlock();
 }
