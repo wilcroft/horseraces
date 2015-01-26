@@ -1,7 +1,8 @@
 #include <iostream>
+#include <iomanip>
 #include <string>
 #include <list>
-#include <chrono>
+//#include <chrono>
 #include <thread>
 #include <fstream>
 #include <thread>
@@ -28,9 +29,15 @@
 #include "../horseraces/hrutils.h"
 
 #define NAMEFILE "names.txt"
+#define PAYOUT_PREFIX "payout-race"
+#define PAYOUT_SUFFIX ".txt"
+#define BETLIST_PREFIX "betlist-race"
+#define BETLIST_SUFFIX ".txt"
 #define NUMTHRDS 10
 
 int createListenSocket(SOCKET* sock, WSADATA* wsaData);
 void handleClient(SOCKET* sock, int i, Horserace* hr);
 void handleRequest(string req, Horserace * hr, SOCKET* sock);
 list<string> getNamesFromFile(string s = NAMEFILE);
+void writePayoutListToFile(Horserace * hr, int r,string fname = "");
+void writeBetListToFile(Horserace * hr, int r,string fname = "");

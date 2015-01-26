@@ -53,12 +53,12 @@ int Better::getBet(int horse){
 	return bets[horse];
 }
 
-void Better::print(){
-	cout << std::left << std::setw(15) << name << "\t" ;
+void Better::print(std::ostream * stm){
+	(*stm) << std::left << std::setw(35) << name << "\t" ;
 	for (int i=0; i<NUM_HORSES_PER_RACE; i++){
-		cout << "$" << std::setw(8) << bets[i];
+		(*stm) << "$" << std::setw(8) << bets[i];
 	}
-	cout << std::endl;
+	(*stm) << std::endl;
 }
 void Better::setPayout(int x){
 	payout = x;

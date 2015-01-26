@@ -2,6 +2,8 @@
 
 std::mutex thrdlk;
 std::mutex iolk;
+std::mutex betlk[NUM_RACES];
+std::mutex paylk[NUM_RACES];
 bool thrdActv [NUMTHRDS];
 
 int main (void){
@@ -202,7 +204,6 @@ list <string> getNamesFromFile(string s){
 }
 
 void handleRequest(string req, Horserace * hr, SOCKET* sock){
-	char opA, opB;
 	string buf;
 	//char retbuf [BUFLEN];
 	// store first to chars (OP code) to op
@@ -217,6 +218,7 @@ void handleRequest(string req, Horserace * hr, SOCKET* sock){
 	op.push_back(req[1]);
 	//remove OP code from req;
 	req.erase(0,2);
+	enum HRErrorCode err = HR_SUCCESS;
 
 	if (op == "GA"){		//Get the active race
 		int active = hr->getActiveRace();
@@ -226,10 +228,8 @@ void handleRequest(string req, Horserace * hr, SOCKET* sock){
 	else if (op == "GH"){
 		int r = std::stoi(strToken(&req));
 		string hstr = strToken(&req);
-		enum HRErrorCode err;
 		if (hstr == "" || hstr == "\n"){
 			list<string> hnames;
-			err = HR_SUCCESS;
 			int i = 0;
 			hr->lock();
 			while (err == HR_SUCCESS && i<NUM_HORSES_PER_RACE){
@@ -244,7 +244,7 @@ void handleRequest(string req, Horserace * hr, SOCKET* sock){
 					send(*sock, x.c_str(), x.length(),0);	
 			}
 			else{
-				buf = "ER " + err;
+				buf = "ER " + std::to_string(err);
 				send(*sock, buf.c_str(), buf.length(),0);
 			}
 		}
@@ -253,7 +253,7 @@ void handleRequest(string req, Horserace * hr, SOCKET* sock){
 			if (err == HR_SUCCESS)
 				buf = "OK " + hname;
 			else
-				buf = "ER " + err;
+				buf = "ER " + std::to_string(err);
 			send(*sock, buf.c_str(), buf.length(),0);
 		}
 	}
@@ -277,7 +277,7 @@ void handleRequest(string req, Horserace * hr, SOCKET* sock){
 					send(*sock, x.c_str(), x.length(),0);	
 			}
 			else{
-				buf = "ER " + err;
+				buf = "ER " + std::to_string(err);
 				send(*sock, buf.c_str(), buf.length(),0);
 			}
 		}
@@ -286,7 +286,7 @@ void handleRequest(string req, Horserace * hr, SOCKET* sock){
 			if (err == HR_SUCCESS)
 				buf = "OK " + hname;
 			else
-				buf = "ER " + err;
+				buf = "ER " + std::to_string(err);
 			send(*sock, buf.c_str(), buf.length(),0);
 		}
 	}
@@ -299,12 +299,93 @@ void handleRequest(string req, Horserace * hr, SOCKET* sock){
 			send(*sock, x.c_str(), x.length(),0);
 		}
 	}
-	else if (op == "GO");
-	else if (op == "Go");
-	else if (op == "G$");
-	else if (op == "GB");
-	else if (op == "Gb");
-	else if (op == "GW");
+	else if (op == "GO"){
+		int r = std::stoi(strToken(&req));
+		string hstr = strToken(&req);
+		enum HRErrorCode err;
+		if (hstr == "" || hstr == "\n"){
+			list<int> odds;
+			err = HR_SUCCESS;
+			int i = 0;
+			hr->lock();
+			while (err == HR_SUCCESS && i<NUM_HORSES_PER_RACE){
+				odds.push_back(hr->getHorseOdds(r,i,&err));
+				i++;
+			}
+			hr->unlock();
+			if (err == HR_SUCCESS){
+				buf = "OK " + NUM_HORSES_PER_RACE;
+				send(*sock, buf.c_str(), buf.length(),0);
+				for (auto& x : odds)
+					send(*sock, std::to_string(x).c_str(), std::to_string(x).length(),0);	
+			}
+			else{
+				buf = "ER " + err;
+				send(*sock, buf.c_str(), buf.length(),0);
+			}
+		}
+		else{
+			int odds = hr->getHorseOdds(r,std::stoi(hstr),&err);
+			if (err == HR_SUCCESS)
+				buf = "OK " + std::to_string(odds);
+			else
+				buf = "ER " + err;
+			send(*sock, buf.c_str(), buf.length(),0);
+		}
+	}
+	else if (op == "Go"){
+		string hstr = strToken(&req);
+		enum HRErrorCode err;
+		if (hstr == "" || hstr == "\n"){
+			list<int> odds;
+			err = HR_SUCCESS;
+			int i = 0;
+			hr->lock();
+			while (err == HR_SUCCESS && i<NUM_HORSES_PER_RACE){
+				odds.push_back(hr->getHorseOddsActive(i,&err));
+				i++;
+			}
+			hr->unlock();
+			if (err == HR_SUCCESS){
+				buf = "OK " + NUM_HORSES_PER_RACE;
+				send(*sock, buf.c_str(), buf.length(),0);
+				for (auto& x : odds)
+					send(*sock, std::to_string(x).c_str(), std::to_string(x).length(),0);	
+			}
+			else{
+				buf = "ER " + err;
+				send(*sock, buf.c_str(), buf.length(),0);
+			}
+		}
+		else{
+			int odds = hr->getHorseOddsActive(std::stoi(hstr),&err);
+			if (err == HR_SUCCESS)
+				buf = "OK " + std::to_string(odds);
+			else
+				buf = "ER " + err;
+			send(*sock, buf.c_str(), buf.length(),0);
+		}
+	}
+	else if (op == "G$"); // omitted
+	else if (op == "GB"); // omitted
+	else if (op == "Gb"); // omitted
+	else if (op == "GW"){
+		string r = strToken(&req);
+		enum HRErrorCode err;
+		if (r == "" || r == "\n"){
+			int w = hr->getHouseWinningsAll();
+			buf = "OK " + std::to_string(w);
+			send(*sock, buf.c_str(), buf.length(),0);
+		}
+		else{
+			int w = hr->getHouseWinnings(std::stoi(r),&err);
+			if (err == HR_SUCCESS)
+				buf = "OK " + w;
+			else
+				buf = "ER " + err;
+			send(*sock, buf.c_str(), buf.length(),0);
+		}
+	} 
 	else if (op == "Gw"){
 		enum HRErrorCode err;
 		int winnings = hr->getHouseWinningsActive(&err);
@@ -314,26 +395,144 @@ void handleRequest(string req, Horserace * hr, SOCKET* sock){
 			buf = "ER " + std::to_string(err);
 		send(*sock, buf.c_str(), buf.length(),0);
 	}
-	else if (op == "GT");
-	else if (op == "Gt");
-	else if (op == "GV");
-	else if (op == "Gv");
-	else if (op == "AB"){
-		iolk.lock();
-		while (req != ""){
-			cout << strToken(&req, ' ') << endl;
+	else if (op == "GT"){
+		string r = strToken(&req);
+		enum HRErrorCode err;
+		if (r == "" || r == "\n"){
+			//int w = hr->getHouseWinningsAll();
+			buf = "ER " + std::to_string(HR_INVALID_RACE);
+			send(*sock, buf.c_str(), buf.length(),0);
 		}
-		iolk.unlock();
+		else{
+			float w = hr->getHouseTake(std::stoi(r),&err);
+			if (err == HR_SUCCESS)
+				buf = "OK " + std::to_string(w);
+			else
+				buf = "ER " + err;
+			send(*sock, buf.c_str(), buf.length(),0);
+		}
+	} 
+	else if (op == "Gt"){
+		enum HRErrorCode err;
+		float w = hr->getHouseTakeActive(&err);
+		if (err == HR_SUCCESS)
+			buf = "OK " + std::to_string(w);
+		else
+			buf = "ER " + std::to_string(err);
+		send(*sock, buf.c_str(), buf.length(),0);
 	}
-	else if (op == "AP");
-	else if (op == "SH");
-	else if (op == "Sh");
-	else if (op == "ST");
-	else if (op == "St");
+	else if (op == "GV"){
+		string r = strToken(&req);
+		enum HRErrorCode err;
+		if (r == "" || r == "\n"){
+			//int w = hr->getHouseWinningsAll();
+			buf = "ER " + std::to_string(HR_INVALID_RACE);
+			send(*sock, buf.c_str(), buf.length(),0);
+		}
+		else{
+			int w = hr->getWinner(std::stoi(r),&err);
+			if (err == HR_SUCCESS)
+				buf = "OK " + w;
+			else
+				buf = "ER " + err;
+			send(*sock, buf.c_str(), buf.length(),0);
+		}
+	}
+	else if (op == "Gv"){
+		enum HRErrorCode err;
+		int winnings = hr->getWinnerActive(&err);
+		if (err == HR_SUCCESS)
+			buf = "OK " + std::to_string(winnings);
+		else
+			buf = "ER " + std::to_string(err);
+		send(*sock, buf.c_str(), buf.length(),0);
+	}
+	else if (op == "AB"){
+		int r = std::stoi(strToken(&req));
+		int h = std::stoi(strToken(&req));
+		int bet = std::stoi(strToken(&req));
+		while ((req.front()) == ' '){
+			req.erase(0,1);
+		}
+		while (req.back() == ' ' || req.back() == '\n'){
+			req.pop_back();
+		}
+		err = hr->addBet(r,req,h,bet);
+		if (err == HR_SUCCESS)
+			buf = "OK";
+		else
+			buf = "ER" + std::to_string(err);
+		send(*sock, buf.c_str(), buf.length(),0);
+		if (err == HR_SUCCESS)
+			writeBetListToFile(hr, r);
+	}
+	else if (op == "AP"){
+		while ((req.front()) == ' '){
+			req.erase(0,1);
+		}
+		while (req.back() == ' ' || req.back() == '\n'){
+			req.pop_back();
+		}
+		hr->addParticipant(req);
+		buf = "OK";
+		send(*sock, buf.c_str(), buf.length(),0);
+	}
+	else if (op == "SH"){
+		int r = std::stoi(strToken(&req));
+		int h = std::stoi(strToken(&req));
+		while ((req.front()) == ' '){
+			req.erase(0,1);
+		}
+		while (req.back() == ' ' || req.back() == '\n'){
+			req.pop_back();
+		}
+		err = hr->setHorseName(r,h,req);
+		if (err == HR_SUCCESS)
+			buf = "OK";
+		else
+			buf = "ER " + std::to_string(err);
+		send(*sock, buf.c_str(), buf.length(),0);
+	}
+	else if (op == "Sh"){
+		int h = std::stoi(strToken(&req));
+		while ((req.front()) == ' '){
+			req.erase(0,1);
+		}
+		while (req.back() == ' ' || req.back() == '\n'){
+			req.pop_back();
+		}
+		err = hr->setHorseNameActive(h,req);
+		if (err == HR_SUCCESS)
+			buf = "OK";
+		else
+			buf = "ER " + std::to_string(err);
+		send(*sock, buf.c_str(), buf.length(),0);
+	}
+	else if (op == "ST"){
+		float pct = std::stof(strToken(&req));
+		string r = strToken(&req);
+		if (r == "" || r == "\n")
+			err = hr->setHouseTakeAll(pct);
+		else
+			err = hr->setHouseTake(std::stoi(r), pct);
+		if (err == HR_SUCCESS)
+			buf = "OK";
+		else
+			buf = "ER " + std::to_string(err);
+		send(*sock, buf.c_str(), buf.length(),0);
+	}
+	else if (op == "St"){
+		float pct = std::stof(req);
+		err = hr->setHouseTakeActive(pct);
+		if (err == HR_SUCCESS)
+			buf = "OK";
+		else
+			buf = "ER " + std::to_string(err);
+		send(*sock, buf.c_str(), buf.length(),0);
+	}
 	else if (op == "SA"){
 		int active;
 		active = std::stoi(req);
-		enum HRErrorCode err;
 		//iolk.lock();
 		//cout << "Setting Race '" << active << "' as active." << endl;
 		//iolk.unlock();
@@ -356,7 +555,7 @@ void handleRequest(string req, Horserace * hr, SOCKET* sock){
 		int race;
 		race = std::stoi(strToken(&req));
 		win = std::stoi(strToken(&req));
-		enum HRErrorCode err = hr->setWinner(race,win);
+		err = hr->setWinner(race,win);
 		if (err == HR_SUCCESS){
 			buf = "OK";
 		}
@@ -364,10 +563,15 @@ void handleRequest(string req, Horserace * hr, SOCKET* sock){
 			buf = "ER " + std::to_string(err);
 		}
 		send(*sock, buf.c_str(), buf.length(),0);
+		if (err == HR_SUCCESS)
+			writePayoutListToFile(hr, race);
 	}
 	else if (op == "Sv"){
 		int win = std::stoi(req);
-		enum HRErrorCode err = hr->setWinnerActive(win);
+		hr->lock();
+		err = hr->setWinnerActive(win);
+		int r = hr->getActiveRace();
+		hr->unlock();
 		if (err == HR_SUCCESS){
 			buf = "OK";
 		}
@@ -375,13 +579,56 @@ void handleRequest(string req, Horserace * hr, SOCKET* sock){
 			buf = "ER " + std::to_string(err);
 		}
 		send(*sock, buf.c_str(), buf.length(),0);
+		if (err == HR_SUCCESS)
+			writePayoutListToFile(hr, r);
 	}
 	else{
 		iolk.lock();
 		cout << "INVALID OPERATION!!! "<< endl;
 		iolk.unlock();
 	}
+}
 
-	
+void writePayoutListToFile(Horserace * hr, int r,string fname){
+	std::ofstream payfile;
+	std:: filebuf * fb = payfile.rdbuf();
 
+	list<Better> betters = hr->getBetterList(r);
+	if (fname == "")
+		fname = PAYOUT_PREFIX + std::to_string(r) + PAYOUT_SUFFIX;
+	paylk[r].lock();
+	fb->open(fname,std::ios::out);
+	payfile << std::left << std::setw(35) << "Name" << "\t";
+	payfile << "Winnings" << endl;
+	for (auto& x: betters){
+		int pay = x.getPayout();
+		if (pay > 0){
+			payfile << std::left << std::setw(35) << x.getName() << "\t";
+			payfile << "$" << std::to_string(x.getPayout()) << endl;
+		}
+	}
+	fb->close();
+	paylk[r].unlock();
+}
+
+void writeBetListToFile(Horserace * hr, int r,string fname){
+	std::ofstream betfile;
+	std:: filebuf * fb = betfile.rdbuf();
+
+	list<Better> betters = hr->getBetterList(r);
+	if (fname == "")
+		fname = BETLIST_PREFIX + std::to_string(r) + BETLIST_SUFFIX;
+	betlk[r].lock();
+	fb->open(fname,std::ios::out);
+	betfile << std::left << std::setw(35) << "Name" << "\t";
+	for (int i = 0 ; i < NUM_HORSES_PER_RACE; i++){
+		betfile << "Horse " << i << "  " ;
+	}
+	betfile << endl;
+	for (auto& x: betters){
+		x.print(&betfile);
+	}
+
+	fb->close();
+	betlk[r].unlock();
 }

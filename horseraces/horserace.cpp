@@ -97,6 +97,8 @@ string Horserace::getHorseNameActive(int x, enum HRErrorCode * err){
 				(*err)=HR_NO_ACTIVE_RACE;
 		return "";
 	}
+	if (err!=nullptr)
+		(*err)=HR_SUCCESS;
 	return getHorseName(activeRace,x, err);
 }
 	
@@ -106,6 +108,8 @@ int Horserace::getHorseOddsActive(int x, enum HRErrorCode * err){
 				(*err)=HR_NO_ACTIVE_RACE;
 		return -1;
 	}
+	if (err!=nullptr)
+		(*err)=HR_SUCCESS;
 	return getHorseOdds(activeRace,x, err);
 }
 
@@ -127,6 +131,8 @@ int Horserace::getWinnerActive(enum HRErrorCode * err){
 				(*err)=HR_NO_ACTIVE_RACE;
 		return -1;
 	}
+	if (err!=nullptr)
+		(*err)=HR_SUCCESS;
 	return race[activeRace]->getWinner();
 }
 
@@ -142,6 +148,8 @@ float Horserace::getHouseTakeActive(enum HRErrorCode * err){
 				(*err)=HR_NO_ACTIVE_RACE;
 		return -1;
 	}
+	if (err!=nullptr)
+		(*err)=HR_SUCCESS;
 	return race[activeRace]->getHouseTake();
 }
 
@@ -151,6 +159,8 @@ int Horserace::getHouseWinningsActive(enum HRErrorCode * err){
 				(*err)=HR_NO_ACTIVE_RACE;
 		return -1;
 	}
+	if (err!=nullptr)
+		(*err)=HR_SUCCESS;
 	return race[activeRace]->getHouseWinnings();
 }
 
@@ -168,6 +178,8 @@ list<Better> Horserace::getBetterListActive(enum HRErrorCode * err){
 		 list<Better> empty;
 		 return empty;
 	}
+	if (err!=nullptr)
+		(*err)=HR_SUCCESS;
 	return getBetterList(activeRace, err);
 }
 
@@ -189,7 +201,8 @@ string Horserace::getHorseName(int r, int x, enum HRErrorCode * err){
 			(*err) = HR_INVALID_RACE;
 		return "";
 	}
-
+	if (err!=nullptr)
+		(*err)=HR_SUCCESS;
 	return race[r]->getHorseName(x,err);
 }
 
@@ -199,7 +212,8 @@ int Horserace::getHorseOdds(int r, int x, enum HRErrorCode * err){
 			(*err) = HR_INVALID_RACE;
 		return -1;
 	}
-
+	if (err!=nullptr)
+		(*err)=HR_SUCCESS;
 	return race[r]->getHorseOdds(x,err);
 }
 
@@ -222,6 +236,8 @@ int Horserace::getWinner(int r, enum HRErrorCode * err){
 			(*err) = HR_INVALID_RACE;
 		return -1;
 	}
+	if (err!=nullptr)
+		(*err)=HR_SUCCESS;
 	return race[r]->getWinner();
 }
 
@@ -237,7 +253,8 @@ float Horserace::getHouseTake(int r, enum HRErrorCode * err){
 			(*err) = HR_INVALID_RACE;
 		return -1;
 	}
-
+	if (err!=nullptr)
+		(*err)=HR_SUCCESS;
 	return race[r]->getHouseTake();
 }
 
@@ -247,7 +264,8 @@ int Horserace::getHouseWinnings(int r, enum HRErrorCode * err){
 			(*err) = HR_INVALID_RACE;
 		return -1;
 	}
-
+	if (err!=nullptr)
+		(*err)=HR_SUCCESS;
 	return race[r]->getHouseWinnings();
 }
 
@@ -269,8 +287,10 @@ list<Better> Horserace::getBetterList(int r, enum HRErrorCode * err){
 		if (err != nullptr)
 			(*err) = HR_INVALID_RACE;
 		list<Better> empty;
-		return empty;;
+		return empty;
 	}
+	if (err!=nullptr)
+		(*err)=HR_SUCCESS;
 	return race[r]->getBetterList();
 }
 

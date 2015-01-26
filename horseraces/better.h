@@ -33,7 +33,7 @@ class Better{
 		enum HRErrorCode addBet(int,int);
 		int getBet(int);
 
-		void print();
+		void print(std::ostream * stm = &cout);
 		void setPayout(int);
 		int getPayout();
 

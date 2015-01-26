@@ -107,6 +107,8 @@ string Race::getHorseName (int x, enum HRErrorCode * err){
 			(*err) = HR_INVALID_HORSE;
 		return "";
 	}
+	if (err!=nullptr)
+		(*err)=HR_SUCCESS;
 	return horses[x]->getName();
 }
 
