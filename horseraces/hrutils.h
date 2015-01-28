@@ -21,6 +21,13 @@ using std::cin;
 using std::string;
 using std::endl;
 
+#define DEBUG 1
+#if DEBUG > 0
+#define DEBUG_MSG(str) do { std::cout << str << std::endl; } while( false )
+#else
+#define DEBUG_MSG(str) do { } while ( false )
+#endif
+
 void cls();
 void topmenu();
 int getUserInt();
