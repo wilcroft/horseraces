@@ -30,7 +30,7 @@ enum HRErrorCode getAllHorseNames(int r, list<string> * s, SOCKET * sock);
 enum HRErrorCode getAllHorseNamesActive(list<string> * s, SOCKET * sock);
 enum HRErrorCode getHorseName(int r, int h, string * s, SOCKET * sock);
 enum HRErrorCode getHorseNameActive(int h, string * s, SOCKET * sock);
-enum HRErrorCode getParticipantList(SOCKET * sock);
+enum HRErrorCode getParticipantList(list<string> * s, SOCKET * sock);
 enum HRErrorCode getAllHorseOdds(int r, vector<int> * o, SOCKET * sock);
 enum HRErrorCode getAllHorseOddsActive (vector<int>* o, SOCKET * sock);
 enum HRErrorCode getHorseOdds (int r, int h, int * o, SOCKET * sock);

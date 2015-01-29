@@ -38,7 +38,30 @@ enum HRErrorCode getActiveRace(int* r, SOCKET * sock){
  *
  ************************************/
 enum HRErrorCode getAllHorseNames(int r, list<string> * s, SOCKET * sock){
-	return HR_UNIMPLEMENTED;
+	string buf;
+	list<string> names;
+	char cbuf [BUFLEN];
+	buf = "GH " + std::to_string(r);
+	send(*sock, buf.c_str(), buf.length(), 0);
+	ZeroMemory(cbuf,BUFLEN*sizeof(char));
+	recv(*sock, cbuf, BUFLEN, 0);
+	buf = cbuf;
+	if (strToken(&buf)=="OK"){
+		int num = std::stoi(buf);
+		buf = "";
+		do{
+			ZeroMemory(cbuf,BUFLEN*sizeof(char));
+			recv(*sock, cbuf, BUFLEN, 0);
+			buf += cbuf;
+		} while (lineCount(buf) < num);
+		do {
+			names.push_back(strToken(&buf,'\n'));
+		}while (buf != "");
+		(*s) = names;
+		return HR_SUCCESS;
+	}
+	else
+		return (enum HRErrorCode)std::stoi(buf);
 }
 enum HRErrorCode getAllHorseNamesActive(list<string> * s, SOCKET * sock){
 	string buf;
@@ -67,16 +90,88 @@ enum HRErrorCode getAllHorseNamesActive(list<string> * s, SOCKET * sock){
 		return (enum HRErrorCode)std::stoi(buf);
 }
 enum HRErrorCode getHorseName(int r, int h, string * s, SOCKET * sock){
-	return HR_UNIMPLEMENTED;
+	string buf;
+	list<string> names;
+	char cbuf [BUFLEN];
+	buf = "GH " + std::to_string(r) + " " + std::to_string(h);
+	send(*sock, buf.c_str(), buf.length(), 0);
+	ZeroMemory(cbuf,BUFLEN*sizeof(char));
+	recv(*sock, cbuf, BUFLEN, 0);
+	buf = cbuf;
+	if (strToken(&buf)=="OK"){
+		*s = buf;
+		return HR_SUCCESS;
+	}
+	else
+		return (enum HRErrorCode)std::stoi(buf);
 }
 enum HRErrorCode getHorseNameActive(int h, string * s, SOCKET * sock){
-	return HR_UNIMPLEMENTED;
+	string buf;
+	list<string> names;
+	char cbuf [BUFLEN];
+	buf = "Gh " + std::to_string(h);
+	send(*sock, buf.c_str(), buf.length(), 0);
+	ZeroMemory(cbuf,BUFLEN*sizeof(char));
+	recv(*sock, cbuf, BUFLEN, 0);
+	buf = cbuf;
+	if (strToken(&buf)=="OK"){
+		*s = buf;
+		return HR_SUCCESS;
+	}
+	else
+		return (enum HRErrorCode)std::stoi(buf);
 }
-enum HRErrorCode getParticipantList(SOCKET * sock){
-	return HR_UNIMPLEMENTED;
+enum HRErrorCode getParticipantList(list<string> * s, SOCKET * sock){
+	string buf;
+	list<string> names;
+	char cbuf [BUFLEN];
+	buf = "GP";
+	send(*sock, buf.c_str(), buf.length(), 0);
+	ZeroMemory(cbuf,BUFLEN*sizeof(char));
+	recv(*sock, cbuf, BUFLEN, 0);
+	buf = cbuf;
+	if (strToken(&buf)=="OK"){
+		int num = std::stoi(buf);
+		buf = "";
+		do{
+			ZeroMemory(cbuf,BUFLEN*sizeof(char));
+			recv(*sock, cbuf, BUFLEN, 0);
+			buf += cbuf;
+		} while (lineCount(buf) < num);
+		do {
+			names.push_back(strToken(&buf,'\n'));
+		}while (buf != "");
+		(*s) = names;
+		return HR_SUCCESS;
+	}
+	else
+		return (enum HRErrorCode)std::stoi(buf);
 }
 enum HRErrorCode getAllHorseOdds(int r, vector<int> * o, SOCKET * sock){
-	return HR_UNIMPLEMENTED;
+	string buf;
+	vector<int> odds;
+	char cbuf [BUFLEN];
+	ZeroMemory(cbuf,BUFLEN*sizeof(char));
+	buf = "GO " + std::to_string(r);
+	send(*sock, buf.c_str(), buf.length(), 0);
+	recv(*sock, cbuf, BUFLEN, 0);
+	buf = cbuf;
+	if (strToken(&buf)=="OK"){
+		int num = std::stoi(buf);
+		buf = "";
+		do{
+			ZeroMemory(cbuf,BUFLEN*sizeof(char));
+			recv(*sock, cbuf, BUFLEN, 0);
+			buf += cbuf;
+		} while (lineCount(buf) < num);
+		do{
+			odds.push_back(std::stoi(strToken(&buf,'\n')));
+		} while (buf != "");
+		(*o) = odds;
+		return HR_SUCCESS;
+	}
+	else
+		return (enum HRErrorCode)std::stoi(buf);
 }
 enum HRErrorCode getAllHorseOddsActive (vector<int>* o, SOCKET * sock){
 	string buf;
