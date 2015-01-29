@@ -39,7 +39,7 @@ SetupWindow::SetupWindow(QWidget *parent) :
     font.setPointSize(font.pointSize()+3);
     portlabel->setFont(font);
 
-    portline = new QLineEdit("23456",this);
+    portline = new QLineEdit(PORT,this);
     portline->move(80,100);
     font = portline->font();
     font.setPointSize(font.pointSize()+3);

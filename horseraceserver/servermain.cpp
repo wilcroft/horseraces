@@ -264,10 +264,12 @@ void handleRequest(string req, Horserace * hr, SOCKET* sock){
 			}
 			hr->unlock();
 			if (err == HR_SUCCESS){
-				buf = "OK " + NUM_HORSES_PER_RACE;
+				buf = "OK " + std::to_string(NUM_HORSES_PER_RACE);
 				send(*sock, buf.c_str(), buf.length(),0);
-				for (auto& x : hnames)
-					send(*sock, x.c_str(), x.length(),0);	
+				for (auto& x : hnames){
+					buf = x + "\n";
+					send(*sock, buf.c_str(), buf.length(),0);	
+				}
 			}
 			else{
 				buf = "ER " + std::to_string(err);
@@ -297,10 +299,12 @@ void handleRequest(string req, Horserace * hr, SOCKET* sock){
 			}
 			hr->unlock();
 			if (err == HR_SUCCESS){
-				buf = "OK " + NUM_HORSES_PER_RACE;
+				buf = "OK " + std::to_string(NUM_HORSES_PER_RACE);
 				send(*sock, buf.c_str(), buf.length(),0);
-				for (auto& x : hnames)
-					send(*sock, x.c_str(), x.length(),0);	
+				for (auto& x : hnames){
+					buf = x + "\n";
+					send(*sock, buf.c_str(), buf.length(),0);	
+				}
 			}
 			else{
 				buf = "ER " + std::to_string(err);
@@ -322,7 +326,8 @@ void handleRequest(string req, Horserace * hr, SOCKET* sock){
 		buf = "OK " + std::to_string(size);
 		send(*sock, buf.c_str(), buf.length(),0);
 		for (auto& x: names){
-			send(*sock, x.c_str(), x.length(),0);
+			buf = x + "\n";
+			send(*sock, buf.c_str(), buf.length(),0);	
 		}
 	}
 	else if (op == "GO"){
@@ -340,13 +345,16 @@ void handleRequest(string req, Horserace * hr, SOCKET* sock){
 			}
 			hr->unlock();
 			if (err == HR_SUCCESS){
-				buf = "OK " + NUM_HORSES_PER_RACE;
+				buf = "OK " + std::to_string(NUM_HORSES_PER_RACE);
 				send(*sock, buf.c_str(), buf.length(),0);
-				for (auto& x : odds)
-					send(*sock, std::to_string(x).c_str(), std::to_string(x).length(),0);	
+				for (auto& x : odds){
+					buf = std::to_string(x) + "\n";
+					send(*sock, buf.c_str(), buf.length(),0);	
+				}
+				//	send(*sock, std::.c_str(), std::to_string(x).length(),0);	
 			}
 			else{
-				buf = "ER " + err;
+				buf = "ER " + std::to_string(err);
 				send(*sock, buf.c_str(), buf.length(),0);
 			}
 		}
@@ -355,7 +363,7 @@ void handleRequest(string req, Horserace * hr, SOCKET* sock){
 			if (err == HR_SUCCESS)
 				buf = "OK " + std::to_string(odds);
 			else
-				buf = "ER " + err;
+				buf = "ER " + std::to_string(err);
 			send(*sock, buf.c_str(), buf.length(),0);
 		}
 	}
@@ -373,13 +381,15 @@ void handleRequest(string req, Horserace * hr, SOCKET* sock){
 			}
 			hr->unlock();
 			if (err == HR_SUCCESS){
-				buf = "OK " + NUM_HORSES_PER_RACE;
+				buf = "OK " + std::to_string(NUM_HORSES_PER_RACE);
 				send(*sock, buf.c_str(), buf.length(),0);
-				for (auto& x : odds)
-					send(*sock, std::to_string(x).c_str(), std::to_string(x).length(),0);	
+				for (auto& x : odds){
+					buf = std::to_string(x) + "\n";
+					send(*sock, buf.c_str(), buf.length(),0);	
+				}
 			}
 			else{
-				buf = "ER " + err;
+				buf = "ER " + std::to_string(err);
 				send(*sock, buf.c_str(), buf.length(),0);
 			}
 		}
@@ -388,7 +398,7 @@ void handleRequest(string req, Horserace * hr, SOCKET* sock){
 			if (err == HR_SUCCESS)
 				buf = "OK " + std::to_string(odds);
 			else
-				buf = "ER " + err;
+				buf = "ER " + std::to_string(err);
 			send(*sock, buf.c_str(), buf.length(),0);
 		}
 	}
@@ -406,9 +416,9 @@ void handleRequest(string req, Horserace * hr, SOCKET* sock){
 		else{
 			int w = hr->getHouseWinnings(std::stoi(r),&err);
 			if (err == HR_SUCCESS)
-				buf = "OK " + w;
+				buf = "OK " + std::to_string(w);
 			else
-				buf = "ER " + err;
+				buf = "ER " + std::to_string(err);
 			send(*sock, buf.c_str(), buf.length(),0);
 		}
 	} 
@@ -434,7 +444,7 @@ void handleRequest(string req, Horserace * hr, SOCKET* sock){
 			if (err == HR_SUCCESS)
 				buf = "OK " + std::to_string(w);
 			else
-				buf = "ER " + err;
+				buf = "ER " + std::to_string(err);
 			send(*sock, buf.c_str(), buf.length(),0);
 		}
 	} 
@@ -458,17 +468,17 @@ void handleRequest(string req, Horserace * hr, SOCKET* sock){
 		else{
 			int w = hr->getWinner(std::stoi(r),&err);
 			if (err == HR_SUCCESS)
-				buf = "OK " + w;
+				buf = "OK " + std::to_string(w);
 			else
-				buf = "ER " + err;
+				buf = "ER " + std::to_string(err);
 			send(*sock, buf.c_str(), buf.length(),0);
 		}
 	}
 	else if (op == "Gv"){
 		enum HRErrorCode err;
-		int winnings = hr->getWinnerActive(&err);
+		int h = hr->getWinnerActive(&err);
 		if (err == HR_SUCCESS)
-			buf = "OK " + std::to_string(winnings);
+			buf = "OK " + std::to_string(h);
 		else
 			buf = "ER " + std::to_string(err);
 		send(*sock, buf.c_str(), buf.length(),0);

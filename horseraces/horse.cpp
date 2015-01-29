@@ -3,14 +3,14 @@
 Horse::Horse(){
 	name = "";
 	bets = 0;
-	odds = 0;
+	odds = 100;
 	isWinner = false;
 }
 
 Horse::Horse(std::string newname){
 	name = newname;
 	bets = 0;
-	odds = 0;
+	odds = 100;
 	isWinner = false;
 }
 

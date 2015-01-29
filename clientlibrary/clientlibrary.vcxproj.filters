@@ -18,9 +18,15 @@
     <ClInclude Include="hrclientlibrary.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\horseraces\hrutils.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="hrclientlibrary.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\horseraces\hrutils.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

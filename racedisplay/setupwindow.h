@@ -7,6 +7,8 @@
 #include <QLabel>
 #include <QFont>
 
+#include "../horseraces/constants.h"
+
 class SetupWindow : public QDialog
 {
     Q_OBJECT

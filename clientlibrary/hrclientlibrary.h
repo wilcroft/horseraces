@@ -61,5 +61,7 @@ enum HRErrorCode setNoActiveRace(SOCKET * sock);
 enum HRErrorCode setWinningHorse(int r, int h, SOCKET * sock);
 enum HRErrorCode setWinningHorseActive(int h, SOCKET * sock);
 
+int createClientSocket(string addr, string port, SOCKET* sock, WSADATA* wsaData);
 
+int lineCount(string s, char c = '\n');
 #endif

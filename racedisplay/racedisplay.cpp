@@ -1,10 +1,12 @@
 #include "racedisplay.h"
 
-RaceDisplay::RaceDisplay(QWidget *parent) :
+RaceDisplay::RaceDisplay(QString addr, QString p, QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::RaceDisplay)
 {
     ui->setupUi(this);
+	port = p;
+	ip = addr;
  //   int y = this->height()-40;
 	//int x = this->width()-40;
 	//int yspc = NUM_HORSES_PER_RACE+1;
@@ -63,10 +65,26 @@ RaceDisplay::RaceDisplay(QWidget *parent) :
 	//hBack[4]->setStyleSheet("QLabel { background-color : blue; }");
 	//hBack[5]->setStyleSheet("QLabel { background-color : violet; }");
     //connect (u)
+
+	//Set up socket connection
+	int socksetup = createClientSocket(ip.toStdString(),port.toStdString(), &sock, &wsaData);
+	if (socksetup != 0){
+		QMessageBox errmsg;
+		errmsg.setText("Error: Could not connect to server!");
+		errmsg.setInformativeText("Please verify the address (" + ip +
+			") and port used (" + port + ")");
+		errmsg.setStandardButtons(QMessageBox::Ok);
+		errmsg.setIcon(QMessageBox::Critical);
+		errmsg.exec();
+	}
+	else{
+		timerid = startTimer(750);
+	}
 }
 
 RaceDisplay::~RaceDisplay()
 {
+	killTimer(timerid);
     delete ui;
     for (int i=0; i < NUM_HORSES_PER_RACE; i++){
         delete hName[i];
@@ -77,6 +95,8 @@ RaceDisplay::~RaceDisplay()
 	//delete winNum;
 	//delete winName;
 	//delete winOdds;
+	closesocket(sock);
+	WSACleanup();
 }
 
 void RaceDisplay::resizeEvent(QResizeEvent * event){
@@ -140,5 +160,31 @@ void RaceDisplay::resizeEvent(QResizeEvent * event){
 
 }
 
+void RaceDisplay::timerEvent(QTimerEvent * event){
+	enum HRErrorCode err;
+	list<string> names;
+	vector<int> odds;
+	int winner;
+	err = getAllHorseNamesActive(&names,&sock);
+	if (err == HR_SUCCESS && getAllHorseOddsActive(&odds,&sock)==HR_SUCCESS){
+		int i=0;
+		for (auto& x: names){
+			hName[i]->setText(QString::fromStdString(x));
+			hOdds[i]->setText(QString::number(odds[i])+ ":1");
+			if (i%2)
+				hBack[i]->setStyleSheet("QLabel { background-color : #CCFFFF; }");
+			else
+				hBack[i]->setStyleSheet("QLabel { background-color : #FFFF99; }");
+			i++;
+		}
+	}
+	err = getWinningHorseActive(&winner, &sock);
+	if (err == HR_SUCCESS && winner >= 0)
+		hBack[winner]->setStyleSheet("QLabel { background-color : yellow;}");
+
+
+}
+
 void RaceDisplay::setIP(QString s){ ip = s; }
 void RaceDisplay::setPort(QString s){ port = s; }
+bool RaceDisplay::hasValidSock(){ return (sock==INVALID_SOCKET ? false : true); }

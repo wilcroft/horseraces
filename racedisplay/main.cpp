@@ -13,12 +13,15 @@ int main(int argc, char *argv[])
         cout << "ok!";
         cout << "Address:" << s.getIP().toStdString();
         cout << "Port:" << s.getPort().toStdString();
-        RaceDisplay w;//(s.getIP(),s.getPort());
-        w.setPort(s.getPort());
-        w.setIP(s.getIP());
-        w.show();
+        RaceDisplay w(s.getIP(),s.getPort());
+        //w.setPort(s.getPort());
+       // w.setIP(s.getIP());
+		if (w.hasValidSock()){
+			w.show();
 
-        return a.exec();
+			return a.exec();
+		}
+		else return -1;
     }
     else{
         cout << "nope!";

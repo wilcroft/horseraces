@@ -37,37 +37,224 @@ enum HRErrorCode getActiveRace(int* r, SOCKET * sock){
  * Returns HR_SUCCESS (0) on success, or the appropriate error from the server
  *
  ************************************/
-enum HRErrorCode getAllHorseNames(int r, list<string> * s, SOCKET * sock);
-enum HRErrorCode getAllHorseNamesActive(list<string> * s, SOCKET * sock);
-enum HRErrorCode getHorseName(int r, int h, string * s, SOCKET * sock);
-enum HRErrorCode getHorseNameActive(int h, string * s, SOCKET * sock);
-enum HRErrorCode getParticipantList(SOCKET * sock);
-enum HRErrorCode getAllHorseOdds(int r, vector<int> * o, SOCKET * sock);
-enum HRErrorCode getAllHorseOddsActive (vector<int>* o, SOCKET * sock);
-enum HRErrorCode getHorseOdds (int r, int h, int * o, SOCKET * sock);
-enum HRErrorCode getHorseOddsActive(int h, int * o, SOCKET * sock);
-enum HRErrorCode getPayoutList(int r, list<Better> * l, SOCKET * sock);
-enum HRErrorCode getBetList(int r, list<Better> * l, SOCKET * sock);
-enum HRErrorCode getBetListActive(list<Better> * l, SOCKET * sock);
-enum HRErrorCode getHouseWinnings(int r, int * w, SOCKET * sock);
-enum HRErrorCode getHouseWinningsActive(int * w, SOCKET * sock);
-enum HRErrorCode getAllHouseWinnings(int * w, SOCKET * sock);
-enum HRErrorCode getHouseTakePct(int r, float * t, SOCKET * sock);
-enum HRErrorCode getHouseTakePctActive(float * t, SOCKET * sock);
-enum HRErrorCode getWinningHorse(int r, int * h, SOCKET * sock);
-enum HRErrorCode getWinningHorseActive(int * h, SOCKET * sock);
+enum HRErrorCode getAllHorseNames(int r, list<string> * s, SOCKET * sock){
+	return HR_UNIMPLEMENTED;
+}
+enum HRErrorCode getAllHorseNamesActive(list<string> * s, SOCKET * sock){
+	string buf;
+	list<string> names;
+	char cbuf [BUFLEN];
+	buf = "Gh";
+	send(*sock, buf.c_str(), buf.length(), 0);
+	ZeroMemory(cbuf,BUFLEN*sizeof(char));
+	recv(*sock, cbuf, BUFLEN, 0);
+	buf = cbuf;
+	if (strToken(&buf)=="OK"){
+		int num = std::stoi(buf);
+		buf = "";
+		do{
+			ZeroMemory(cbuf,BUFLEN*sizeof(char));
+			recv(*sock, cbuf, BUFLEN, 0);
+			buf += cbuf;
+		} while (lineCount(buf) < num);
+		do {
+			names.push_back(strToken(&buf,'\n'));
+		}while (buf != "");
+		(*s) = names;
+		return HR_SUCCESS;
+	}
+	else
+		return (enum HRErrorCode)std::stoi(buf);
+}
+enum HRErrorCode getHorseName(int r, int h, string * s, SOCKET * sock){
+	return HR_UNIMPLEMENTED;
+}
+enum HRErrorCode getHorseNameActive(int h, string * s, SOCKET * sock){
+	return HR_UNIMPLEMENTED;
+}
+enum HRErrorCode getParticipantList(SOCKET * sock){
+	return HR_UNIMPLEMENTED;
+}
+enum HRErrorCode getAllHorseOdds(int r, vector<int> * o, SOCKET * sock){
+	return HR_UNIMPLEMENTED;
+}
+enum HRErrorCode getAllHorseOddsActive (vector<int>* o, SOCKET * sock){
+	string buf;
+	vector<int> odds;
+	char cbuf [BUFLEN];
+	ZeroMemory(cbuf,BUFLEN*sizeof(char));
+	buf = "Go";
+	send(*sock, buf.c_str(), buf.length(), 0);
+	recv(*sock, cbuf, BUFLEN, 0);
+	buf = cbuf;
+	if (strToken(&buf)=="OK"){
+		int num = std::stoi(buf);
+		buf = "";
+		do{
+			ZeroMemory(cbuf,BUFLEN*sizeof(char));
+			recv(*sock, cbuf, BUFLEN, 0);
+			buf += cbuf;
+		} while (lineCount(buf) < num);
+		do{
+			odds.push_back(std::stoi(strToken(&buf,'\n')));
+		} while (buf != "");
+		(*o) = odds;
+		return HR_SUCCESS;
+	}
+	else
+		return (enum HRErrorCode)std::stoi(buf);
+}
+enum HRErrorCode getHorseOdds (int r, int h, int * o, SOCKET * sock){
+	return HR_UNIMPLEMENTED;
+}
+enum HRErrorCode getHorseOddsActive(int h, int * o, SOCKET * sock){
+	return HR_UNIMPLEMENTED;
+}
+enum HRErrorCode getPayoutList(int r, list<Better> * l, SOCKET * sock){
+	return HR_UNIMPLEMENTED;
+}
+enum HRErrorCode getBetList(int r, list<Better> * l, SOCKET * sock){
+	return HR_UNIMPLEMENTED;
+}
+enum HRErrorCode getBetListActive(list<Better> * l, SOCKET * sock){
+	return HR_UNIMPLEMENTED;
+}
+enum HRErrorCode getHouseWinnings(int r, int * w, SOCKET * sock){
+	return HR_UNIMPLEMENTED;
+}
+enum HRErrorCode getHouseWinningsActive(int * w, SOCKET * sock){
+	return HR_UNIMPLEMENTED;
+}
+enum HRErrorCode getAllHouseWinnings(int * w, SOCKET * sock){
+	return HR_UNIMPLEMENTED;
+}
+enum HRErrorCode getHouseTakePct(int r, float * t, SOCKET * sock){
+	return HR_UNIMPLEMENTED;
+}
+enum HRErrorCode getHouseTakePctActive(float * t, SOCKET * sock){
+	return HR_UNIMPLEMENTED;
+}
+enum HRErrorCode getWinningHorse(int r, int * h, SOCKET * sock){
+	return HR_UNIMPLEMENTED;
+}
+enum HRErrorCode getWinningHorseActive(int * h, SOCKET * sock){
+	string buf;
+	//vector<int> odds;
+	char cbuf [BUFLEN];
+	ZeroMemory(cbuf,BUFLEN*sizeof(char));
+	buf = "Gv";
+	send(*sock, buf.c_str(), buf.length(), 0);
+	recv(*sock, cbuf, BUFLEN, 0);
+	buf = cbuf;
+	if (strToken(&buf)=="OK"){
+		*h = std::stoi(buf);
+		/*buf = "";
+		do{
+			ZeroMemory(cbuf,BUFLEN*sizeof(char));
+			recv(*sock, cbuf, BUFLEN, 0);
+			buf += cbuf;
+		} while (lineCount(buf) < num);
+		do{
+			odds.push_back(std::stoi(strToken(&buf,'\n')));
+		} while (buf != "");*/
+		//(*o) = odds;
+		return HR_SUCCESS;
+	}
+	else
+		return (enum HRErrorCode)std::stoi(buf);
+}
 
 //Add Functions
-enum HRErrorCode addBet(int r, int h, string n, SOCKET * sock);
-enum HRErrorCode addParticipant(string n, SOCKET * sock);
+enum HRErrorCode addBet(int r, int h, string n, SOCKET * sock){
+	return HR_UNIMPLEMENTED;
+}
+enum HRErrorCode addParticipant(string n, SOCKET * sock){
+	return HR_UNIMPLEMENTED;
+}
 
 //Set Functions
-enum HRErrorCode setHorseName(int r, int h, string n, SOCKET * sock);
-enum HRErrorCode setHorseNameActive(int h, string n, SOCKET * sock);
-enum HRErrorCode setHouseTake(int r, float t, SOCKET * sock);
-enum HRErrorCode setAllHouseTake(float t, SOCKET * sock);
-enum HRErrorCode setHouseTakeActive(float t, SOCKET * sock);
-enum HRErrorCode setActiveRace(int r, SOCKET * sock);
-enum HRErrorCode setNoActiveRace(SOCKET * sock);
-enum HRErrorCode setWinningHorse(int r, int h, SOCKET * sock);
-enum HRErrorCode setWinningHorseActive(int h, SOCKET * sock);
+enum HRErrorCode setHorseName(int r, int h, string n, SOCKET * sock){
+	return HR_UNIMPLEMENTED;
+}
+enum HRErrorCode setHorseNameActive(int h, string n, SOCKET * sock){
+	return HR_UNIMPLEMENTED;
+}
+enum HRErrorCode setHouseTake(int r, float t, SOCKET * sock){
+	return HR_UNIMPLEMENTED;
+}
+enum HRErrorCode setAllHouseTake(float t, SOCKET * sock){
+	return HR_UNIMPLEMENTED;
+}
+enum HRErrorCode setHouseTakeActive(float t, SOCKET * sock){
+	return HR_UNIMPLEMENTED;
+}
+enum HRErrorCode setActiveRace(int r, SOCKET * sock){
+	return HR_UNIMPLEMENTED;
+}
+enum HRErrorCode setNoActiveRace(SOCKET * sock){
+	return HR_UNIMPLEMENTED;
+}
+enum HRErrorCode setWinningHorse(int r, int h, SOCKET * sock){
+	return HR_UNIMPLEMENTED;
+}
+enum HRErrorCode setWinningHorseActive(int h, SOCKET * sock){
+	return HR_UNIMPLEMENTED;
+}
+
+int createClientSocket(string addr, string port, SOCKET* sock, WSADATA* wsaData){
+	(*sock) = INVALID_SOCKET;
+
+	struct addrinfo * result = NULL,
+					* ptr = NULL,
+					hints;
+
+	if (WSAStartup(MAKEWORD(2,2), wsaData) != 0){
+		std:: cerr << "Startup failed! " << endl;
+		return -1;
+	}
+
+	ZeroMemory(&hints, sizeof(hints));
+	hints.ai_family = AF_UNSPEC;
+	hints.ai_socktype = SOCK_STREAM;
+	hints.ai_protocol = IPPROTO_TCP;
+
+	if (getaddrinfo(addr.c_str(), port.c_str(), &hints, &result) != 0){
+		std::cerr << "getaddrinfo() failed!" << endl;
+		WSACleanup();
+		return -1;
+	}
+
+	for (ptr=result; ptr!=nullptr; ptr=ptr->ai_next){
+		(*sock)=socket(ptr->ai_family,ptr->ai_socktype, ptr->ai_protocol);
+		if (*sock == INVALID_SOCKET){
+			std::cerr << "socket() failed! : " << WSAGetLastError() << endl;
+			WSACleanup();
+			return -1;
+		}
+		if (connect(*sock,ptr->ai_addr, (int) ptr->ai_addrlen) == SOCKET_ERROR){
+			closesocket(*sock);
+			(*sock) = INVALID_SOCKET;
+		}
+		else
+			break;
+	}
+
+	freeaddrinfo(result);
+
+	if (*sock == INVALID_SOCKET){
+		std::cerr << "Couldn't find server at " << addr << ":" << port << endl;
+		WSACleanup();
+		return -1;
+	}
+
+	return 0;
+
+}
+
+int lineCount(string s, char c){
+	int sum = 0;
+	for (int i=0; i<s.length(); i++){
+		if (s[i]==c) sum++;
+	}
+	return sum;
+}

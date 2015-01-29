@@ -42,22 +42,35 @@ void Race::updateOdds(){
 			if (horses[i]->bets > 0)
 				horses[i]->odds = (int)floor((totalBets*(1-houseTake))/((float)horses[i]->bets));
 			else
-				horses[i]->odds = 0;
+				horses[i]->odds = 100;
 		}
 		
 }
 
 enum HRErrorCode Race::setWinner(int x){
-	if (x> NUM_HORSES_PER_RACE - 1 || x < 0)
+	if (x> NUM_HORSES_PER_RACE - 1 || x < -1)
 		return HR_INVALID_HORSE;
 	else {
-		winner = x;
-		horses[x]->isWinner = true;
-		updateOdds();
-		for (auto& b: betters){
-			b.setPayout(horses[x]->getOdds()*b.getBet(x));
+		if ( x != -1){
+			winner = x;
+			horses[x]->isWinner = true;
+			updateOdds();
+			for (auto& b: betters){
+				b.setPayout(horses[x]->getOdds()*b.getBet(x));
+			}
+			houseWinnings = totalBets - horses[x]->getOdds()*horses[x]->bets;
 		}
-		houseWinnings = totalBets - horses[x]->getOdds()*horses[x]->bets;
+		else {
+			winner = x;
+			for (int i = 0; i < NUM_HORSES_PER_RACE; i++){
+				horses[i]->isWinner = false;
+			}
+			updateOdds();
+			for (auto& b: betters){
+					b.setPayout(0);
+			}
+			houseWinnings = 0;
+		}
 		return HR_SUCCESS;
 	}
 }
