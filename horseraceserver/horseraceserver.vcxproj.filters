@@ -62,5 +62,6 @@
   </ItemGroup>
   <ItemGroup>
     <Text Include="..\horseraces\names.txt" />
+    <Text Include="names.txt" />
   </ItemGroup>
 </Project>

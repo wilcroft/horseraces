@@ -83,6 +83,7 @@
   </ItemGroup>
   <ItemGroup>
     <Text Include="..\horseraces\names.txt" />
+    <Text Include="names.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

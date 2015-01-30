@@ -47,7 +47,7 @@ enum HRErrorCode getWinningHorse(int r, int * h, SOCKET * sock);
 enum HRErrorCode getWinningHorseActive(int * h, SOCKET * sock);
 
 //Add Functions
-enum HRErrorCode addBet(int r, int h, string n, SOCKET * sock);
+enum HRErrorCode addBet(int r, int h, int b, string n, SOCKET * sock);
 enum HRErrorCode addParticipant(string n, SOCKET * sock);
 
 //Set Functions

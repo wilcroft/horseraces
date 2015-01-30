@@ -12,6 +12,9 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "racedisplaytest", "..\..\..\qttest\racedisplaytest\racedisplaytest\racedisplaytest.vcxproj", "{AC6D657D-12FC-389E-95A1-C8C24A423097}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "raceclientgui", "raceclientgui\raceclientgui.vcxproj", "{FB7527DF-66F6-4666-AA52-0E528F152676}"
+	ProjectSection(ProjectDependencies) = postProject
+		{F6185B10-E84A-4012-806A-34CA35C17552} = {F6185B10-E84A-4012-806A-34CA35C17552}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "racedisplay", "racedisplay\racedisplay.vcxproj", "{B12702AD-ABFB-343A-A199-8E24837244A3}"
 	ProjectSection(ProjectDependencies) = postProject

@@ -213,13 +213,13 @@ list <string> getNamesFromFile(string s){
 	std::filebuf * fb = namefile.rdbuf();
 
 	list <string> names;
-	string temp;
+	char temp[BUFLEN];
 	
 	fb->open (s, std::ios::in);
 
 	if (fb->is_open()){
 		while (!namefile.eof()){
-			namefile >> temp;
+			namefile.getline(temp,BUFLEN);
 			names.push_back(temp);
 		}
 		fb->close();
@@ -629,45 +629,48 @@ void writePayoutListToFile(Horserace * hr, int r,string fname){
 	std::ofstream payfile;
 	std:: filebuf * fb = payfile.rdbuf();
 
-	list<Better> betters = hr->getBetterList(r);
-	if (fname == "")
-		fname = PAYOUT_PREFIX + std::to_string(r) + PAYOUT_SUFFIX;
-	paylk[r].lock();
-	fb->open(fname,std::ios::out);
-	payfile << std::left << std::setw(35) << "Name" << "\t";
-	payfile << "Winnings" << endl;
-	for (auto& x: betters){
-		int pay = x.getPayout();
-		if (pay > 0){
-			payfile << std::left << std::setw(35) << x.getName() << "\t";
-			payfile << "$" << std::to_string(x.getPayout()) << endl;
+	if (r>=0){
+		list<Better> betters = hr->getBetterList(r);
+		if (fname == "")
+			fname = PAYOUT_PREFIX + std::to_string(r) + PAYOUT_SUFFIX;
+		paylk[r].lock();
+		fb->open(fname,std::ios::out);
+		payfile << std::left << std::setw(35) << "Name" << "\t";
+		payfile << "Winnings" << endl;
+		for (auto& x: betters){
+			int pay = x.getPayout();
+			if (pay > 0){
+				payfile << std::left << std::setw(35) << x.getName() << "\t";
+				payfile << "$" << std::to_string(x.getPayout()) << endl;
+			}
 		}
+		payfile << endl; 
+		payfile << std::right << std::setw(35) << "House Winnings: ";
+		payfile << "$" << std::to_string(hr->getHouseWinnings(r)) << endl;
+		fb->close();
+		paylk[r].unlock();
 	}
-	payfile << endl; 
-	payfile << std::right << std::setw(35) << "House Winnings: ";
-	payfile << "$" << std::to_string(hr->getHouseWinnings(r)) << endl;
-	fb->close();
-	paylk[r].unlock();
 }
 
 void writeBetListToFile(Horserace * hr, int r,string fname){
 	std::ofstream betfile;
 	std:: filebuf * fb = betfile.rdbuf();
+	if (r>=0){
+		list<Better> betters = hr->getBetterList(r);
+		if (fname == "")
+			fname = BETLIST_PREFIX + std::to_string(r) + BETLIST_SUFFIX;
+		betlk[r].lock();
+		fb->open(fname,std::ios::out);
+		betfile << std::left << std::setw(35) << "Name" << "\t";
+		for (int i = 0 ; i < NUM_HORSES_PER_RACE; i++){
+			betfile << "Horse " << i << "  " ;
+		}
+		betfile << endl;
+		for (auto& x: betters){
+			x.print(&betfile);
+		}
 
-	list<Better> betters = hr->getBetterList(r);
-	if (fname == "")
-		fname = BETLIST_PREFIX + std::to_string(r) + BETLIST_SUFFIX;
-	betlk[r].lock();
-	fb->open(fname,std::ios::out);
-	betfile << std::left << std::setw(35) << "Name" << "\t";
-	for (int i = 0 ; i < NUM_HORSES_PER_RACE; i++){
-		betfile << "Horse " << i << "  " ;
+		fb->close();
+		betlk[r].unlock();
 	}
-	betfile << endl;
-	for (auto& x: betters){
-		x.print(&betfile);
-	}
-
-	fb->close();
-	betlk[r].unlock();
 }

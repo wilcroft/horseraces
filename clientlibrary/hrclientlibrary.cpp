@@ -133,11 +133,11 @@ enum HRErrorCode getParticipantList(list<string> * s, SOCKET * sock){
 	if (strToken(&buf)=="OK"){
 		int num = std::stoi(buf);
 		buf = "";
-		do{
+		while (lineCount(buf) < num){
 			ZeroMemory(cbuf,BUFLEN*sizeof(char));
 			recv(*sock, cbuf, BUFLEN, 0);
 			buf += cbuf;
-		} while (lineCount(buf) < num);
+		} 
 		do {
 			names.push_back(strToken(&buf,'\n'));
 		}while (buf != "");
@@ -215,19 +215,79 @@ enum HRErrorCode getBetListActive(list<Better> * l, SOCKET * sock){
 	return HR_UNIMPLEMENTED;
 }
 enum HRErrorCode getHouseWinnings(int r, int * w, SOCKET * sock){
-	return HR_UNIMPLEMENTED;
+	string buf;
+	char cbuf [BUFLEN];
+	ZeroMemory(cbuf,BUFLEN*sizeof(char));
+	buf = "GW " + std::to_string(r);
+	send(*sock, buf.c_str(), buf.length(), 0);
+	recv(*sock, cbuf, BUFLEN, 0);
+	buf = cbuf;
+	if (strToken(&buf)=="OK"){
+		*w = std::stoi(buf);
+		return HR_SUCCESS;
+	}
+	else
+		return (enum HRErrorCode)std::stoi(buf);
 }
 enum HRErrorCode getHouseWinningsActive(int * w, SOCKET * sock){
-	return HR_UNIMPLEMENTED;
+	string buf;
+	char cbuf [BUFLEN];
+	ZeroMemory(cbuf,BUFLEN*sizeof(char));
+	buf = "Gw";
+	send(*sock, buf.c_str(), buf.length(), 0);
+	recv(*sock, cbuf, BUFLEN, 0);
+	buf = cbuf;
+	if (strToken(&buf)=="OK"){
+		*w = std::stoi(buf);
+		return HR_SUCCESS;
+	}
+	else
+		return (enum HRErrorCode)std::stoi(buf);
 }
 enum HRErrorCode getAllHouseWinnings(int * w, SOCKET * sock){
-	return HR_UNIMPLEMENTED;
+	string buf;
+	char cbuf [BUFLEN];
+	ZeroMemory(cbuf,BUFLEN*sizeof(char));
+	buf = "GW";
+	send(*sock, buf.c_str(), buf.length(), 0);
+	recv(*sock, cbuf, BUFLEN, 0);
+	buf = cbuf;
+	if (strToken(&buf)=="OK"){
+		*w = std::stoi(buf);
+		return HR_SUCCESS;
+	}
+	else
+		return (enum HRErrorCode)std::stoi(buf);
 }
 enum HRErrorCode getHouseTakePct(int r, float * t, SOCKET * sock){
-	return HR_UNIMPLEMENTED;
+	string buf;
+	char cbuf [BUFLEN];
+	ZeroMemory(cbuf,BUFLEN*sizeof(char));
+	buf = "GT " + std::to_string(r);
+	send(*sock, buf.c_str(), buf.length(), 0);
+	recv(*sock, cbuf, BUFLEN, 0);
+	buf = cbuf;
+	if (strToken(&buf)=="OK"){
+		(*t) = std::stof(buf);
+		return HR_SUCCESS;
+	}
+	else
+		return (enum HRErrorCode)std::stoi(buf);
 }
 enum HRErrorCode getHouseTakePctActive(float * t, SOCKET * sock){
-	return HR_UNIMPLEMENTED;
+	string buf;
+	char cbuf [BUFLEN];
+	ZeroMemory(cbuf,BUFLEN*sizeof(char));
+	buf = "Gt";
+	send(*sock, buf.c_str(), buf.length(), 0);
+	recv(*sock, cbuf, BUFLEN, 0);
+	buf = cbuf;
+	if (strToken(&buf)=="OK"){
+		(*t) = std::stof(buf);
+		return HR_SUCCESS;
+	}
+	else
+		return (enum HRErrorCode)std::stoi(buf);
 }
 enum HRErrorCode getWinningHorse(int r, int * h, SOCKET * sock){
 	return HR_UNIMPLEMENTED;
@@ -260,8 +320,20 @@ enum HRErrorCode getWinningHorseActive(int * h, SOCKET * sock){
 }
 
 //Add Functions
-enum HRErrorCode addBet(int r, int h, string n, SOCKET * sock){
-	return HR_UNIMPLEMENTED;
+enum HRErrorCode addBet(int r, int h, int b, string n, SOCKET * sock){
+	string buf;
+	char cbuf [BUFLEN];
+	ZeroMemory(cbuf,BUFLEN*sizeof(char));
+	buf = "AB " + std::to_string(r) + " " + std::to_string(h) + " " +
+		std::to_string(b) + " " + n;
+	send(*sock, buf.c_str(), buf.length(), 0);
+	recv(*sock, cbuf, BUFLEN, 0);
+	buf = cbuf;
+	if (strToken(&buf)=="OK"){
+		return HR_SUCCESS;
+	}
+	else
+		return (enum HRErrorCode)std::stoi(buf);
 }
 enum HRErrorCode addParticipant(string n, SOCKET * sock){
 	return HR_UNIMPLEMENTED;
@@ -275,25 +347,91 @@ enum HRErrorCode setHorseNameActive(int h, string n, SOCKET * sock){
 	return HR_UNIMPLEMENTED;
 }
 enum HRErrorCode setHouseTake(int r, float t, SOCKET * sock){
-	return HR_UNIMPLEMENTED;
+	string buf;
+	char cbuf [BUFLEN];
+	ZeroMemory(cbuf,BUFLEN*sizeof(char));
+	buf = "ST " + std::to_string(t) + " " + std::to_string(r);
+	send(*sock, buf.c_str(), buf.length(), 0);
+	recv(*sock, cbuf, BUFLEN, 0);
+	buf = cbuf;
+	if (strToken(&buf)=="OK"){
+		return HR_SUCCESS;
+	}
+	else
+		return (enum HRErrorCode)std::stoi(buf);
 }
 enum HRErrorCode setAllHouseTake(float t, SOCKET * sock){
-	return HR_UNIMPLEMENTED;
+	string buf;
+	char cbuf [BUFLEN];
+	ZeroMemory(cbuf,BUFLEN*sizeof(char));
+	buf = "ST " + std::to_string(t);
+	send(*sock, buf.c_str(), buf.length(), 0);
+	recv(*sock, cbuf, BUFLEN, 0);
+	buf = cbuf;
+	if (strToken(&buf)=="OK"){
+		return HR_SUCCESS;
+	}
+	else
+		return (enum HRErrorCode)std::stoi(buf);
 }
 enum HRErrorCode setHouseTakeActive(float t, SOCKET * sock){
-	return HR_UNIMPLEMENTED;
+	string buf;
+	char cbuf [BUFLEN];
+	ZeroMemory(cbuf,BUFLEN*sizeof(char));
+	buf = "St " + std::to_string(t);
+	send(*sock, buf.c_str(), buf.length(), 0);
+	recv(*sock, cbuf, BUFLEN, 0);
+	buf = cbuf;
+	if (strToken(&buf)=="OK"){
+		return HR_SUCCESS;
+	}
+	else
+		return (enum HRErrorCode)std::stoi(buf);
 }
 enum HRErrorCode setActiveRace(int r, SOCKET * sock){
-	return HR_UNIMPLEMENTED;
+	string buf;
+	char cbuf [BUFLEN];
+	ZeroMemory(cbuf,BUFLEN*sizeof(char));
+	buf = "SA " + std::to_string(r);
+	send(*sock, buf.c_str(), buf.length(), 0);
+	recv(*sock, cbuf, BUFLEN, 0);
+	buf = cbuf;
+	if (strToken(&buf)=="OK"){
+		return HR_SUCCESS;
+	}
+	else
+		return (enum HRErrorCode)std::stoi(buf);
 }
 enum HRErrorCode setNoActiveRace(SOCKET * sock){
 	return HR_UNIMPLEMENTED;
 }
 enum HRErrorCode setWinningHorse(int r, int h, SOCKET * sock){
-	return HR_UNIMPLEMENTED;
+	string buf;
+	char cbuf [BUFLEN];
+	ZeroMemory(cbuf,BUFLEN*sizeof(char));
+	buf = "SV " + std::to_string(r) + " " + std::to_string(h);
+	send(*sock, buf.c_str(), buf.length(), 0);
+	recv(*sock, cbuf, BUFLEN, 0);
+	buf = cbuf;
+	if (strToken(&buf)=="OK"){
+		return HR_SUCCESS;
+	}
+	else
+		return (enum HRErrorCode)std::stoi(buf);
 }
 enum HRErrorCode setWinningHorseActive(int h, SOCKET * sock){
-	return HR_UNIMPLEMENTED;
+	string buf;
+	char cbuf [BUFLEN];
+	ZeroMemory(cbuf,BUFLEN*sizeof(char));
+	buf = "Sv " + std::to_string(h);
+	send(*sock, buf.c_str(), buf.length(), 0);
+	recv(*sock, cbuf, BUFLEN, 0);
+	buf = cbuf;
+	if (strToken(&buf)=="OK"){
+		return HR_SUCCESS;
+	}
+	else
+		return (enum HRErrorCode)std::stoi(buf);
 }
 
 int createClientSocket(string addr, string port, SOCKET* sock, WSADATA* wsaData){
@@ -348,7 +486,7 @@ int createClientSocket(string addr, string port, SOCKET* sock, WSADATA* wsaData)
 
 int lineCount(string s, char c){
 	int sum = 0;
-	for (int i=0; i<s.length(); i++){
+	for (unsigned int i=0; i<s.length(); i++){
 		if (s[i]==c) sum++;
 	}
 	return sum;

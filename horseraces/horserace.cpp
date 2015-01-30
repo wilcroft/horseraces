@@ -37,6 +37,7 @@ void Horserace::addParticipant(string s){
 	mtx.lock();
 	participants.push_back(s);
 	participants.sort();
+	participants.unique();
 	mtx.unlock();
 }
 
