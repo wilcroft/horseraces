@@ -168,13 +168,17 @@ void RaceDisplay::timerEvent(QTimerEvent * event){
 	err = getAllHorseNamesActive(&names,&sock);
 	if (err == HR_SUCCESS && getAllHorseOddsActive(&odds,&sock)==HR_SUCCESS){
 		int i=0;
-		for (auto& x: names){
-			hName[i]->setText(QString::fromStdString(x));
+		for (i=0; i< NUM_HORSES_PER_RACE; i++){
 			hOdds[i]->setText(QString::number(odds[i])+ ":1");
+			hName[i]->setText("");
 			if (i%2)
 				hBack[i]->setStyleSheet("QLabel { background-color : #CCFFFF; }");
 			else
 				hBack[i]->setStyleSheet("QLabel { background-color : #FFFF99; }");
+		}
+		i=0;
+		for (auto& x: names){
+			hName[i]->setText(QString::fromStdString(x));
 			i++;
 		}
 	}
