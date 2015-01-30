@@ -17,24 +17,28 @@ RaceClientGUI::RaceClientGUI(QString ip, QString port,QWidget *parent)
 	totalFrame = new QFrame(this);
 	houseFrame = new QFrame(this);
 	winFrame = new QFrame(this);
+	horseFrame = new QFrame(this);
 	betFrame = new QFrame(this);
 	activeFrame = new QFrame(this);
 	QString style = "QFrame { border : 5px ridge #999999}";
-	activeFrame->setFixedSize(253,203);
+	activeFrame->setFixedSize(253,323);
 	activeFrame->move(0,0);
 	activeFrame->setStyleSheet(style);
-	betFrame->setFixedSize(752,203);
+	betFrame->setFixedSize(752,163);
 	betFrame->move(248,0);
 	betFrame->setStyleSheet(style);
-	winFrame->setFixedSize(303,302);
-	winFrame->move(0,198);
+	winFrame->setFixedSize(303,182);
+	winFrame->move(0,318);
 	winFrame->setStyleSheet(style);
-	houseFrame->setFixedSize(305,302);
-	houseFrame->move(298,198);
+	houseFrame->setFixedSize(305,182);
+	houseFrame->move(298,318);
 	houseFrame->setStyleSheet(style);
-	totalFrame->setFixedSize(402,302);
-	totalFrame->move(598,198);
+	totalFrame->setFixedSize(402,182);
+	totalFrame->move(598,318);
 	totalFrame->setStyleSheet(style);
+	horseFrame->setFixedSize(752,165);
+	horseFrame->move(248,158);
+	horseFrame->setStyleSheet(style);
 
 	// Add Combo Boxes
 	QFont comboFont,titleFont;
@@ -52,21 +56,28 @@ RaceClientGUI::RaceClientGUI(QString ip, QString port,QWidget *parent)
 	}
 
 	//Active Area Objects
-	activeRace = new QComboBox(this);
-	activeRace->setFont(comboFont);
-	activeRace->addItem("None");
-	activeRace->addItems(raceList);
-	activeRace->move(78,90);
-	activeRace->setFixedWidth(95);
+	gif = new QMovie("horserace.gif");
+	horsegif = new QLabel(this);
+	horsegif->move(20,20);
+	horsegif->setMovie(gif);
+	horsegif->setFixedSize(208,136);
+	gif->start();
 
 	activeRaceLabel = new QLabel("Active Race", this);
 	activeRaceLabel->setFont(titleFont);
 	activeRaceLabel->setFixedSize(230,40);
-	activeRaceLabel->move(10,20);
+	activeRaceLabel->move(10,170);
+
+	activeRace = new QComboBox(this);
+	activeRace->setFont(comboFont);
+	activeRace->addItem("None");
+	activeRace->addItems(raceList);
+	activeRace->move(78,225);
+	activeRace->setFixedWidth(95);
 
 	activeSubmit = new QPushButton("OK", this);
 	activeSubmit->setFont(comboFont);
-	activeSubmit->move(78,150);
+	activeSubmit->move(78,270);
 
 	connect(activeSubmit, SIGNAL(clicked()), this, SLOT(changeActive()));
 
@@ -76,40 +87,40 @@ RaceClientGUI::RaceClientGUI(QString ip, QString port,QWidget *parent)
 	betRace = new QComboBox(this);
 	betRace->setFont(comboFont);
 	betRace->addItems(raceList);
-	betRace->move(675,40);
+	betRace->move(675,25);
 	betRace->setFixedWidth(95);
 
-	betNameLabel = new QLabel("Race:",this);
-	betNameLabel->setFont(comboFont);
-	betNameLabel->setFixedSize(150,30);
-	betNameLabel->move(505,42);
-	betNameLabel->setAlignment(Qt::AlignRight);
+	betRaceLabel = new QLabel("Race:",this);
+	betRaceLabel->setFont(comboFont);
+	betRaceLabel->setFixedSize(150,30);
+	betRaceLabel->move(505,27);
+	betRaceLabel->setAlignment(Qt::AlignRight);
 	
 	betHorse = new QComboBox(this);
 	betHorse->setFont(comboFont);
 	betHorse->addItems(horseList);
-	betHorse->move(675,140);
+	betHorse->move(675,100);
 	betHorse->setFixedWidth(100);
 
 	betHorseLabel = new QLabel("Horse:",this);
 	betHorseLabel->setFont(comboFont);
 	betHorseLabel->setFixedSize(150,30);
-	betHorseLabel->move(675,105);
+	betHorseLabel->move(675,65);
 
 	betName = new QLineEdit(this);
 	betName->setFont(comboFont);
 	betName->setFixedSize(350,30);
-	betName->move(300,140);
+	betName->move(300,100);
 
 	betNameLabel = new QLabel("Name:",this);
 	betNameLabel->setFont(comboFont);
 	betNameLabel->setFixedSize(150,30);
-	betNameLabel->move(300,105);
+	betNameLabel->move(300,65);
 
 	betAmt = new QLineEdit(this);
 	betAmt->setFont(comboFont);
 	betAmt->setFixedSize(100,30);
-	betAmt->move(800,140);
+	betAmt->move(800,100);
 
 	QStringList amts;
 	for (int i=0; i< 100; i++)
@@ -121,7 +132,7 @@ RaceClientGUI::RaceClientGUI(QString ip, QString port,QWidget *parent)
 	betAmtLabel = new QLabel("Bet:",this);
 	betAmtLabel->setFont(comboFont);
 	betAmtLabel->setFixedSize(150,30);
-	betAmtLabel->move(800,105);
+	betAmtLabel->move(800,65);
 
 	betTitle = new QLabel("New Bet:",this);
 	betTitle->setFont(titleFont);
@@ -130,45 +141,92 @@ RaceClientGUI::RaceClientGUI(QString ip, QString port,QWidget *parent)
 
 	betSubmit = new QPushButton("OK", this);
 	betSubmit->setFont(comboFont);
-	betSubmit->move(920,140);
+	betSubmit->move(920,100);
 	betSubmit->setFixedSize(50,30);
 	
 	connect(betSubmit,SIGNAL(clicked()),this,SLOT(newBet()));
+
+	//Horse Area Objects
+	horseTitle = new QLabel("Name a Horse:",this);
+	horseTitle->setFont(titleFont);
+	horseTitle->setFixedSize(350, 40);
+	horseTitle->move(270,180);
+
+	horseName = new QLineEdit(this);
+	horseName->setFont(comboFont);
+	horseName->setFixedSize(350,30);
+	horseName->move(300,260);
+
+	horseNameLabel = new QLabel("Name:",this);
+	horseNameLabel->setFont(comboFont);
+	horseNameLabel->setFixedSize(150,30);
+	horseNameLabel->move(300,225);
+	
+	horseNum = new QComboBox(this);
+	horseNum->setFont(comboFont);
+	horseNum->addItems(horseList);
+	horseNum->move(675,260);
+	horseNum->setFixedWidth(100);
+
+	horseNumLabel = new QLabel("Horse:",this);
+	horseNumLabel->setFont(comboFont);
+	horseNumLabel->setFixedSize(150,30);
+	horseNumLabel->move(675,225);
+
+	horseRace = new QComboBox(this);
+	horseRace->setFont(comboFont);
+	horseRace->addItems(raceList);
+	horseRace->move(800,260);
+	horseRace->setFixedWidth(95);
+
+	horseRaceLabel = new QLabel("Race:",this);
+	horseRaceLabel->setFont(comboFont);
+	horseRaceLabel->setFixedSize(150,30);
+	horseRaceLabel->move(800,225);
+
+	horseSubmit = new QPushButton("OK", this);
+	horseSubmit->setFont(comboFont);
+	horseSubmit->move(920,260);
+	horseSubmit->setFixedSize(50,30);
+	
+	connect(horseSubmit,SIGNAL(clicked()),this,SLOT(setName()));
+	connect(horseNum,SIGNAL(currentIndexChanged(int)),this,SLOT(pullName()));
+	connect(horseRace,SIGNAL(currentIndexChanged(int)),this,SLOT(pullName()));
 
 	// Winner Area Objects
 	winTitle = new QLabel("Set Winner:",this);
 	winTitle->setFont(titleFont);
 	winTitle->setFixedSize(300,40);
-	winTitle->move(20,220);
+	winTitle->move(20,340);
 
 	winRace = new QComboBox(this);
 	winRace->setFont(comboFont);
 	winRace->addItems(raceList);
-	winRace->move(120,330);
+	winRace->move(120,400);
 	winRace->setFixedWidth(95);
 
 	winRaceLabel = new QLabel("Race:",this);
 	winRaceLabel->setFont(comboFont);
 	winRaceLabel->setFixedSize(90,30);
-	winRaceLabel->move(20,332);
+	winRaceLabel->move(20,402);
 	winRaceLabel->setAlignment(Qt::AlignRight);
 	
 	winHorse = new QComboBox(this);
 	winHorse->setFont(comboFont);
 	winHorse->addItem("None");
 	winHorse->addItems(horseList);
-	winHorse->move(120,410);
+	winHorse->move(120,450);
 	winHorse->setFixedWidth(100);
 
 	winHorseLabel = new QLabel("Horse:",this);
 	winHorseLabel->setFont(comboFont);
 	winHorseLabel->setFixedSize(90,30);
-	winHorseLabel->move(20,412);
+	winHorseLabel->move(20,452);
 	winHorseLabel->setAlignment(Qt::AlignRight);
 
 	winSubmit = new QPushButton("OK", this);
 	winSubmit->setFont(comboFont);
-	winSubmit->move(237,410);
+	winSubmit->move(237,450);
 	winSubmit->setFixedSize(50,30);
 
 	connect(winSubmit,SIGNAL(clicked()),this,SLOT(setWinner()));
@@ -177,53 +235,54 @@ RaceClientGUI::RaceClientGUI(QString ip, QString port,QWidget *parent)
 	houseTitle = new QLabel("House Take:",this);
 	houseTitle->setFont(titleFont);
 	houseTitle->setFixedSize(300,40);
-	houseTitle->move(320,220);
+	houseTitle->move(320,340);
 
 	houseRace = new QComboBox(this);
 	houseRace->setFont(comboFont);
 	houseRace->addItems(raceList);
-	houseRace->move(420,330);
+	houseRace->move(420,400);
 	houseRace->setFixedWidth(95);
 
 	houseRaceLabel = new QLabel("Race:",this);
 	houseRaceLabel->setFont(comboFont);
 	houseRaceLabel->setFixedSize(90,30);
-	houseRaceLabel->move(320,332);
+	houseRaceLabel->move(320,402);
 	houseRaceLabel->setAlignment(Qt::AlignRight);
 
 	housePct = new QLineEdit(this);
 	housePct->setFont(comboFont);
 	housePct->setFixedSize(95,30);
-	housePct->move(420,410);
+	housePct->move(420,450);
 
 	housePctLabel = new QLabel("Take (%):",this);
 	housePctLabel->setFont(comboFont);
 	housePctLabel->setFixedSize(92,30);
-	housePctLabel->move(318,412);
+	housePctLabel->move(318,452);
 	housePctLabel->setAlignment(Qt::AlignRight);
 
 	houseSubmit = new QPushButton("OK", this);
 	houseSubmit->setFont(comboFont);
-	houseSubmit->move(537,410);
+	houseSubmit->move(537,450);
 	houseSubmit->setFixedSize(50,30);
 
 	connect(houseSubmit,SIGNAL(clicked()),this,SLOT(setTake()));
+	connect(houseRace,SIGNAL(currentIndexChanged(int)), this, SLOT(pullTake()));
 
 	//Totals Objects
 	totalTitle = new QLabel("House Earnings:",this);
 	totalTitle->setFont(titleFont);
 	totalTitle->setFixedSize(350,40);
-	totalTitle->move(620,220);
+	totalTitle->move(620,340);
 
 	totalEarnings = new QLabel("Overall:       $",this);
 	totalEarnings->setFont(comboFont);
 	totalEarnings->setFixedSize(360,30);
-	totalEarnings->move(620,332);
+	totalEarnings->move(620,400);
 	
 	totalActive = new QLabel("Active Race: $",this);
 	totalActive->setFont(comboFont);
 	totalActive->setFixedSize(360,30);
-	totalActive->move(620,412);
+	totalActive->move(620,450);
 	/*participants <<  "alpha" << "beta" << "charlie"<< "delta";
 	participCompl = new QCompleter(participants, this);
 	participCompl->setCaseSensitivity(Qt::CaseInsensitive);
@@ -262,7 +321,7 @@ RaceClientGUI::RaceClientGUI(QString ip, QString port,QWidget *parent)
 
 RaceClientGUI::~RaceClientGUI()
 {
-	//killTimer(timerid);
+	killTimer(timerid);
 	//Frames
 	delete activeFrame;
 	delete betFrame;
@@ -285,11 +344,18 @@ RaceClientGUI::~RaceClientGUI()
 	delete housePctLabel;
 	delete totalTitle;
 	delete totalEarnings;
+	delete totalActive;
+	delete horseTitle;
+	delete horseNameLabel;
+	delete horseRaceLabel;
+	delete horseNumLabel;
+	delete horsegif;
 
 	//TextBoxes
 	delete betName;
 	delete betAmt;
 	delete housePct;
+	delete horseName;
 
 	//ComboBoxes
 	delete betRace;
@@ -298,12 +364,16 @@ RaceClientGUI::~RaceClientGUI()
 	delete winRace;
 	delete winHorse;
 	delete houseRace;
+	delete horseNum;
+	delete horseRace;
 
 	delete betSubmit;
 	delete activeSubmit;
 	delete winSubmit;
 	delete houseSubmit;
+	delete horseSubmit;
 	
+	delete gif;
 //	delete participCompl;
 //	delete betCompl;
 
@@ -322,6 +392,9 @@ void RaceClientGUI::timerEvent(QTimerEvent *){
 	float f;
 	int wAll, w;
 	int i = houseRace->currentIndex();
+	int j = horseRace->currentIndex();
+	int h = horseNum->currentIndex();
+	string n;
 	socklock.lock();
 	//do things
 	getParticipantList(&p, &sock);
@@ -335,6 +408,10 @@ void RaceClientGUI::timerEvent(QTimerEvent *){
 		getHouseTakePctActive(&f, &sock);
 	else
 		getHouseTakePct(i-1,&f,&sock);
+	if (j == 0)
+		getHorseNameActive(h,&n,&sock);
+	else
+		getHorseName(j-1,h,&n,&sock);
 	socklock.unlock();
 	participants.clear();
 	for (auto& x: p){
@@ -348,6 +425,9 @@ void RaceClientGUI::timerEvent(QTimerEvent *){
 	activeRace->setCurrentIndex(r+1);
 	totalEarnings->setText("Overall:       $" + QString::number(wAll));
 	totalActive->setText("Active Race: $" + QString::number(w));
+	
+	if (!horseName->isModified())
+		horseName->setText(QString::fromStdString(n));
 
 	if (!housePct->isModified())
 		housePct->setText(QString::number(std::floor(f*100+0.5)));
@@ -400,4 +480,42 @@ void RaceClientGUI::setTake(){
 	else
 		setHouseTake (r-1,(f/100.0),&sock);
 	socklock.unlock();
+}
+void RaceClientGUI::setName(){
+	QString n = horseName->text();
+	int r = horseRace->currentIndex();
+	int h = horseNum->currentIndex();
+
+	socklock.lock();
+	if (r == 0)
+		setHorseNameActive(h,n.toStdString(),&sock);
+	else
+		setHorseName(r-1,h,n.toStdString(),&sock);
+	socklock.unlock();
+}
+void RaceClientGUI::pullTake(){
+	float f;
+	int i = houseRace->currentIndex();
+
+	socklock.lock();
+	if (i==0)
+		getHouseTakePctActive(&f, &sock);
+	else
+		getHouseTakePct(i-1,&f,&sock);
+	socklock.unlock();
+	housePct->setText(QString::number(std::floor(f*100+0.5)));
+	housePct->setModified(false);
+}
+void RaceClientGUI::pullName(){
+	int r = horseRace->currentIndex();
+	int h = horseNum->currentIndex();
+	string n;
+	socklock.lock();
+	if (r == 0)
+		getHorseNameActive(h,&n,&sock);
+	else
+		getHorseName(r-1,h,&n,&sock);
+	socklock.unlock();
+	horseName->setText(QString::fromStdString(n));
+	horseName->setModified(false);
 }

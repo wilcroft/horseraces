@@ -341,10 +341,32 @@ enum HRErrorCode addParticipant(string n, SOCKET * sock){
 
 //Set Functions
 enum HRErrorCode setHorseName(int r, int h, string n, SOCKET * sock){
-	return HR_UNIMPLEMENTED;
+	string buf;
+	char cbuf [BUFLEN];
+	ZeroMemory(cbuf,BUFLEN*sizeof(char));
+	buf = "SH " + std::to_string(r) + " " + std::to_string(h) + " " + n;
+	send(*sock, buf.c_str(), buf.length(), 0);
+	recv(*sock, cbuf, BUFLEN, 0);
+	buf = cbuf;
+	if (strToken(&buf)=="OK"){
+		return HR_SUCCESS;
+	}
+	else
+		return (enum HRErrorCode)std::stoi(buf);
 }
 enum HRErrorCode setHorseNameActive(int h, string n, SOCKET * sock){
-	return HR_UNIMPLEMENTED;
+	string buf;
+	char cbuf [BUFLEN];
+	ZeroMemory(cbuf,BUFLEN*sizeof(char));
+	buf = "Sh " + std::to_string(h) + " " + n;
+	send(*sock, buf.c_str(), buf.length(), 0);
+	recv(*sock, cbuf, BUFLEN, 0);
+	buf = cbuf;
+	if (strToken(&buf)=="OK"){
+		return HR_SUCCESS;
+	}
+	else
+		return (enum HRErrorCode)std::stoi(buf);
 }
 enum HRErrorCode setHouseTake(int r, float t, SOCKET * sock){
 	string buf;

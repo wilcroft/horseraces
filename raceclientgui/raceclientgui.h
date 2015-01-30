@@ -10,6 +10,7 @@
 #include <QMutex>
 #include <qcompleter.h>
 #include <qpushbutton.h>
+#include <qmovie.h>
 #include <cmath>
 
 #include "ui_raceclientgui.h"
@@ -79,6 +80,7 @@ class RaceClientGUI : public QMainWindow
 	QLabel * horseNameLabel;
 	QLabel * horseRaceLabel;
 	QLabel * horseNumLabel;
+	QLabel * horsegif;
 
 	//TextBoxes
 	QLineEdit * betName;
@@ -104,6 +106,9 @@ class RaceClientGUI : public QMainWindow
 	QPushButton * houseSubmit;
 	QPushButton * horseSubmit;
 
+
+	QMovie * gif;
+
 	int timerid;
 
 	SOCKET sock;
@@ -122,6 +127,7 @@ public slots:
 	void newBet();
 	void setWinner();
 	void setTake();
+	void setName();
 	void pullTake();
 	void pullName();
 

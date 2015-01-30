@@ -44,13 +44,13 @@ void Race::updateOdds(){
 			else
 				horses[i]->odds = 100;
 		}
-		
 }
 
 enum HRErrorCode Race::setWinner(int x){
 	if (x> NUM_HORSES_PER_RACE - 1 || x < -1)
 		return HR_INVALID_HORSE;
 	else {
+		mtx.lock();
 		if ( x != -1){
 			winner = x;
 			horses[x]->isWinner = true;
@@ -71,6 +71,7 @@ enum HRErrorCode Race::setWinner(int x){
 			}
 			houseWinnings = 0;
 		}
+		mtx.unlock();
 		return HR_SUCCESS;
 	}
 }
@@ -90,7 +91,9 @@ enum HRErrorCode Race::setHouseTake(float x){
 	if (x < 0 || x >=1)
 		return HR_INVALID_HOUSE_TAKE;
 	houseTake = x;
+	mtx.lock();
 	updateOdds();
+	mtx.unlock();
 	return HR_SUCCESS;
 }
 
@@ -99,12 +102,18 @@ float Race::getHouseTake(){
 }
 
 void Race::addBetter(string x){
+	mtx.lock();
 	betters.emplace_back(x);
 	betters.sort();
+	mtx.unlock();
 }
 
 list<Better> Race::getBetterList(){
-	return betters;
+	list<Better> temp;
+	mtx.lock();
+	temp = betters;
+	mtx.unlock();
+	return temp;
 }
 
 enum HRErrorCode Race::setHorseName(int x, string s){
@@ -145,6 +154,7 @@ enum HRErrorCode Race::addBet(string name, int h, int bet){
 	
 	list<Better>::iterator iter;
 
+	mtx.lock();
 	iter = betters.begin();
 	while (iter != betters.end() && iter->getName()!=name) iter++;
 	if (iter == betters.end()){
@@ -157,7 +167,7 @@ enum HRErrorCode Race::addBet(string name, int h, int bet){
 	horses[h]->addBet(&(*iter),bet);
 	totalBets+=bet;
 	updateOdds();
-
+	mtx.unlock();
 	return HR_SUCCESS;
 
 }
