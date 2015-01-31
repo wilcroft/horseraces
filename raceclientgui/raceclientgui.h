@@ -81,6 +81,7 @@ class RaceClientGUI : public QMainWindow
 	QLabel * horseRaceLabel;
 	QLabel * horseNumLabel;
 	QLabel * horsegif;
+	QLabel * betOK;
 
 	//TextBoxes
 	QLineEdit * betName;
@@ -110,6 +111,7 @@ class RaceClientGUI : public QMainWindow
 	QMovie * gif;
 
 	int timerid;
+	int oktimer;
 
 	SOCKET sock;
 	WSADATA wsaData;

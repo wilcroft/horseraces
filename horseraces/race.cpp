@@ -158,7 +158,8 @@ enum HRErrorCode Race::addBet(string name, int h, int bet){
 	iter = betters.begin();
 	while (iter != betters.end() && iter->getName()!=name) iter++;
 	if (iter == betters.end()){
-		addBetter(name);
+		betters.emplace_back(name);
+		betters.sort();
 		iter = betters.begin();
 		while (iter != betters.end() && iter->getName()!=name) iter++;
 	}

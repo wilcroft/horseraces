@@ -122,6 +122,14 @@ RaceClientGUI::RaceClientGUI(QString ip, QString port,QWidget *parent)
 	betAmt->setFixedSize(100,30);
 	betAmt->move(800,100);
 
+	betOK = new QLabel("Bet Received!",this);
+	betOK->setFont(comboFont);
+	betOK->setFixedSize(150,30);
+	betOK->move (820,135);
+	betOK->setAlignment(Qt::AlignRight);
+	betOK->setStyleSheet("QLabel { color : #339900; }");
+	betOK->setVisible(false);
+
 	QStringList amts;
 	for (int i=0; i< 100; i++)
 		amts.push_back(QString::number(i*50));
@@ -386,51 +394,57 @@ RaceClientGUI::~RaceClientGUI()
 
 bool RaceClientGUI::hasValidSock(){ return (sock==INVALID_SOCKET ? false : true); }
 
-void RaceClientGUI::timerEvent(QTimerEvent *){
-	list <string> p;
-	int r;
-	float f;
-	int wAll, w;
-	int i = houseRace->currentIndex();
-	int j = horseRace->currentIndex();
-	int h = horseNum->currentIndex();
-	string n;
-	socklock.lock();
-	//do things
-	getParticipantList(&p, &sock);
-	getAllHouseWinnings(&wAll,&sock);
-	getActiveRace(&r, &sock);
-	if (r!=-1)
-		getHouseWinningsActive(&w,&sock);
-	else 
-		w = 0;
-	if (i==0)
-		getHouseTakePctActive(&f, &sock);
-	else
-		getHouseTakePct(i-1,&f,&sock);
-	if (j == 0)
-		getHorseNameActive(h,&n,&sock);
-	else
-		getHorseName(j-1,h,&n,&sock);
-	socklock.unlock();
-	participants.clear();
-	for (auto& x: p){
-		participants.push_back(QString::fromStdString(x));
-	}
-	delete participCompl;
-	participCompl = new QCompleter(participants, this);
-	participCompl->setCaseSensitivity(Qt::CaseInsensitive);
-	betName->setCompleter(participCompl);
+void RaceClientGUI::timerEvent(QTimerEvent *event){
+	if(event->timerId()==timerid){
+		list <string> p;
+		int r;
+		float f;
+		int wAll, w;
+		int i = houseRace->currentIndex();
+		int j = horseRace->currentIndex();
+		int h = horseNum->currentIndex();
+		string n;
+		socklock.lock();
+		//do things
+		getParticipantList(&p, &sock);
+		getAllHouseWinnings(&wAll,&sock);
+		getActiveRace(&r, &sock);
+		if (r!=-1)
+			getHouseWinningsActive(&w,&sock);
+		else 
+			w = 0;
+		if (i==0)
+			getHouseTakePctActive(&f, &sock);
+		else
+			getHouseTakePct(i-1,&f,&sock);
+		if (j == 0)
+			getHorseNameActive(h,&n,&sock);
+		else
+			getHorseName(j-1,h,&n,&sock);
+		socklock.unlock();
+		participants.clear();
+		for (auto& x: p){
+			participants.push_back(QString::fromStdString(x));
+		}
+		delete participCompl;
+		participCompl = new QCompleter(participants, this);
+		participCompl->setCaseSensitivity(Qt::CaseInsensitive);
+		betName->setCompleter(participCompl);
 
-	activeRace->setCurrentIndex(r+1);
-	totalEarnings->setText("Overall:       $" + QString::number(wAll));
-	totalActive->setText("Active Race: $" + QString::number(w));
+		activeRace->setCurrentIndex(r+1);
+		totalEarnings->setText("Overall:       $" + QString::number(wAll));
+		totalActive->setText("Active Race: $" + QString::number(w));
 	
-	if (!horseName->isModified())
-		horseName->setText(QString::fromStdString(n));
+		if (!horseName->isModified())
+			horseName->setText(QString::fromStdString(n));
 
-	if (!housePct->isModified())
-		housePct->setText(QString::number(std::floor(f*100+0.5)));
+		if (!housePct->isModified())
+			housePct->setText(QString::number(std::floor(f*100+0.5)));
+	}
+	else if (event->timerId() == oktimer){
+		betOK->setVisible(false);
+		killTimer(oktimer);
+	}
 
 }
 
@@ -448,18 +462,25 @@ void RaceClientGUI::newBet(){
 	QString n = betName->text();
 	int h = betHorse->currentIndex();
 	int r = betRace->currentIndex();
+	enum HRErrorCode err;
 	int b = betAmt->text().toInt();
 	
 	socklock.lock();
 	if (r == 0){
 		getActiveRace(&r,&sock);
 		if (r >= 0)
-			addBet(r,h,b,n.toStdString(),&sock);
+			err = addBet(r,h,b,n.toStdString(),&sock);
+		else
+			err = HR_NO_ACTIVE_RACE;
 	}
 	else
-		addBet(r-1,h,b,n.toStdString(),&sock);
+		err = addBet(r-1,h,b,n.toStdString(),&sock);
 			
 	socklock.unlock();
+	if (err==HR_SUCCESS){
+		betOK->setVisible(true);
+		oktimer = startTimer(1500);
+	}
 }
 
 void RaceClientGUI::setWinner(){

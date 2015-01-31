@@ -39,5 +39,6 @@ int createListenSocket(SOCKET* sock, WSADATA* wsaData);
 void handleClient(SOCKET* sock, int i, Horserace* hr);
 void handleRequest(string req, Horserace * hr, SOCKET* sock);
 list<string> getNamesFromFile(string s = NAMEFILE);
+void getHorseNamesFromFile(string s, Horserace * hr);
 void writePayoutListToFile(Horserace * hr, int r,string fname = "");
 void writeBetListToFile(Horserace * hr, int r,string fname = "");

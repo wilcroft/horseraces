@@ -125,6 +125,7 @@ enum HRErrorCode getHorseNameActive(int h, string * s, SOCKET * sock){
 }
 enum HRErrorCode getParticipantList(list<string> * s, SOCKET * sock){
 	string buf;
+	string linea;
 	list<string> names;
 	char cbuf [BUFLEN];
 	buf = "GP";
@@ -132,9 +133,10 @@ enum HRErrorCode getParticipantList(list<string> * s, SOCKET * sock){
 	ZeroMemory(cbuf,BUFLEN*sizeof(char));
 	recv(*sock, cbuf, BUFLEN, 0);
 	buf = cbuf;
-	if (strToken(&buf)=="OK"){
-		int num = std::stoi(buf);
-		buf = "";
+	linea = strToken(&buf, '\n');
+	if (strToken(&linea)=="OK"){
+		int num = std::stoi(linea);
+		//buf = "";
 		while (lineCount(buf) < num){
 			ZeroMemory(cbuf,BUFLEN*sizeof(char));
 			recv(*sock, cbuf, BUFLEN, 0);
@@ -147,7 +149,7 @@ enum HRErrorCode getParticipantList(list<string> * s, SOCKET * sock){
 		return HR_SUCCESS;
 	}
 	else
-		return (enum HRErrorCode)std::stoi(buf);
+		return (enum HRErrorCode)std::stoi(linea);
 }
 enum HRErrorCode getAllHorseOdds(int r, vector<int> * o, SOCKET * sock){
 	string buf;

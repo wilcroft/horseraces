@@ -15,6 +15,7 @@ int main (void){
 	SOCKET * clientsocket;
 	list<string> names = getNamesFromFile();
 	Horserace * hr = new Horserace(names);
+	getHorseNamesFromFile("horses.txt",hr);
 
 	//setup and create a socket for listening
 	ret = createListenSocket(&listensocket, &wsaData);
@@ -228,7 +229,25 @@ list <string> getNamesFromFile(string s){
 	names.sort();
 	return names;
 }
+void getHorseNamesFromFile(string s, Horserace * hr){
+	std::ifstream namefile;
+	std::filebuf * fb = namefile.rdbuf();
 
+	int i=0;
+	char temp[BUFLEN];
+	
+	fb->open (s, std::ios::in);
+
+	if (fb->is_open()){
+		while (!namefile.eof() && i < NUM_RACES*NUM_HORSES_PER_RACE){
+			namefile.getline(temp,BUFLEN);
+			hr->setHorseName( i/NUM_HORSES_PER_RACE,i%NUM_HORSES_PER_RACE,temp);
+			i++;
+		}
+		fb->close();
+	}
+
+}
 void handleRequest(string req, Horserace * hr, SOCKET* sock){
 	string buf;
 	//char retbuf [BUFLEN];
@@ -323,7 +342,7 @@ void handleRequest(string req, Horserace * hr, SOCKET* sock){
 	else if (op == "GP"){
 		list<string> names = hr->getParticipants();
 		int size = names.size();
-		buf = "OK " + std::to_string(size);
+		buf = "OK " + std::to_string(size) + "\n";
 		send(*sock, buf.c_str(), buf.length(),0);
 		for (auto& x: names){
 			buf = x + "\n";
@@ -497,7 +516,7 @@ void handleRequest(string req, Horserace * hr, SOCKET* sock){
 		if (err == HR_SUCCESS)
 			buf = "OK";
 		else
-			buf = "ER" + std::to_string(err);
+			buf = "ER " + std::to_string(err);
 		send(*sock, buf.c_str(), buf.length(),0);
 		if (err == HR_SUCCESS)
 			writeBetListToFile(hr, r);
