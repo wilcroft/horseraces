@@ -85,4 +85,7 @@
   <ItemGroup>
     <ResourceCompile Include="racedisplay.rc" />
   </ItemGroup>
+  <ItemGroup>
+    <Image Include="runninghorse.gif" />
+  </ItemGroup>
 </Project>
