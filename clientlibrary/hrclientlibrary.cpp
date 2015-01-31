@@ -65,6 +65,7 @@ enum HRErrorCode getAllHorseNames(int r, list<string> * s, SOCKET * sock){
 }
 enum HRErrorCode getAllHorseNamesActive(list<string> * s, SOCKET * sock){
 	string buf;
+	string linea;
 	list<string> names;
 	char cbuf [BUFLEN];
 	buf = "Gh";
@@ -72,14 +73,15 @@ enum HRErrorCode getAllHorseNamesActive(list<string> * s, SOCKET * sock){
 	ZeroMemory(cbuf,BUFLEN*sizeof(char));
 	recv(*sock, cbuf, BUFLEN, 0);
 	buf = cbuf;
-	if (strToken(&buf)=="OK"){
-		int num = std::stoi(buf);
-		buf = "";
-		do{
+	linea = strToken(&buf, '\n');
+	if (strToken(&linea)=="OK"){
+		int num = std::stoi(linea);
+//		buf = "";
+		while (lineCount(buf) < num){
 			ZeroMemory(cbuf,BUFLEN*sizeof(char));
 			recv(*sock, cbuf, BUFLEN, 0);
 			buf += cbuf;
-		} while (lineCount(buf) < num);
+		} 
 		do {
 			names.push_back(strToken(&buf,'\n'));
 		}while (buf != "");
@@ -87,7 +89,7 @@ enum HRErrorCode getAllHorseNamesActive(list<string> * s, SOCKET * sock){
 		return HR_SUCCESS;
 	}
 	else
-		return (enum HRErrorCode)std::stoi(buf);
+		return (enum HRErrorCode)std::stoi(linea);
 }
 enum HRErrorCode getHorseName(int r, int h, string * s, SOCKET * sock){
 	string buf;
@@ -157,8 +159,8 @@ enum HRErrorCode getAllHorseOdds(int r, vector<int> * o, SOCKET * sock){
 	recv(*sock, cbuf, BUFLEN, 0);
 	buf = cbuf;
 	if (strToken(&buf)=="OK"){
-		int num = std::stoi(buf);
-		buf = "";
+		int num = std::stoi(strToken(&buf));
+//		buf = "";
 		do{
 			ZeroMemory(cbuf,BUFLEN*sizeof(char));
 			recv(*sock, cbuf, BUFLEN, 0);
@@ -175,6 +177,7 @@ enum HRErrorCode getAllHorseOdds(int r, vector<int> * o, SOCKET * sock){
 }
 enum HRErrorCode getAllHorseOddsActive (vector<int>* o, SOCKET * sock){
 	string buf;
+	string linea;
 	vector<int> odds;
 	char cbuf [BUFLEN];
 	ZeroMemory(cbuf,BUFLEN*sizeof(char));
@@ -182,14 +185,17 @@ enum HRErrorCode getAllHorseOddsActive (vector<int>* o, SOCKET * sock){
 	send(*sock, buf.c_str(), buf.length(), 0);
 	recv(*sock, cbuf, BUFLEN, 0);
 	buf = cbuf;
-	if (strToken(&buf)=="OK"){
-		int num = std::stoi(buf);
-		buf = "";
-		do{
+	linea = strToken(&buf, '\n');
+	if (strToken(&linea)=="OK"){
+		int num = std::stoi(linea);
+//		buf = "";
+		if (buf != "" && buf != "\n")
+			int i = 0;
+		while (lineCount(buf) < num){
 			ZeroMemory(cbuf,BUFLEN*sizeof(char));
 			recv(*sock, cbuf, BUFLEN, 0);
 			buf += cbuf;
-		} while (lineCount(buf) < num);
+		}
 		do{
 			odds.push_back(std::stoi(strToken(&buf,'\n')));
 		} while (buf != "");
@@ -197,7 +203,7 @@ enum HRErrorCode getAllHorseOddsActive (vector<int>* o, SOCKET * sock){
 		return HR_SUCCESS;
 	}
 	else
-		return (enum HRErrorCode)std::stoi(buf);
+		return (enum HRErrorCode)std::stoi(linea);
 }
 enum HRErrorCode getHorseOdds (int r, int h, int * o, SOCKET * sock){
 	return HR_UNIMPLEMENTED;
@@ -425,7 +431,18 @@ enum HRErrorCode setActiveRace(int r, SOCKET * sock){
 		return (enum HRErrorCode)std::stoi(buf);
 }
 enum HRErrorCode setNoActiveRace(SOCKET * sock){
-	return HR_UNIMPLEMENTED;
+	string buf;
+	char cbuf [BUFLEN];
+	ZeroMemory(cbuf,BUFLEN*sizeof(char));
+	buf = "SX";
+	send(*sock, buf.c_str(), buf.length(), 0);
+	recv(*sock, cbuf, BUFLEN, 0);
+	buf = cbuf;
+	if (strToken(&buf)=="OK"){
+		return HR_SUCCESS;
+	}
+	else
+		return (enum HRErrorCode)std::stoi(buf);
 }
 enum HRErrorCode setWinningHorse(int r, int h, SOCKET * sock){
 	string buf;

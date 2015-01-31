@@ -6,6 +6,7 @@
 #include <QtGui/QFont>
 #include <qmessagebox.h>
 #include <iostream>
+#include <qmovie.h>
 
 #include "ui_racedisplay.h"
 #include "../clientlibrary/hrclientlibrary.h"
@@ -36,10 +37,10 @@ class RaceDisplay : public QMainWindow
     QLabel * hNum[NUM_HORSES_PER_RACE];
     QLabel * hOdds[NUM_HORSES_PER_RACE];
 	QLabel * hBack[NUM_HORSES_PER_RACE];
-	QLabel * winName;
-	QLabel * winNum;
-	QLabel * winOdds;
-	QLabel * winBack;
+
+	QLabel * race;
+	QLabel * img [2];
+	QMovie * mov [2];
 
 	SOCKET sock;
 	WSADATA wsaData;

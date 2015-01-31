@@ -51,6 +51,23 @@ RaceDisplay::RaceDisplay(QString addr, QString p, QWidget *parent) :
 		hOdds[i]->setAlignment(Qt::AlignRight);
 
     }
+	for (int i=0;i<2;i++){
+		mov[i] = new QMovie("runninghorse.gif");
+		img[i] = new QLabel(this);
+		img[i]->setMovie(mov[i]);
+		mov[i]->start();
+		img[i]->setAlignment(Qt::AlignCenter);
+	}
+	img[0]->move(10,10);
+	QFont rfont;
+	rfont.setPointSize(56);
+	rfont.setBold(true);
+	race = new QLabel("RACE X", this);
+	race->setAlignment(Qt::AlignCenter);
+	race->setFixedSize(320,100);
+	race->setFont(rfont);
+	race->setStyleSheet("QLabel { background-color : #66CC66;}");
+	
 	//winBack = new QLabel(this);
 	//winBack->setStyleSheet("QLabel { background-color : yellow; border-width : 5px; border-style: solid; border-color : red}");
 	//winNum = new QLabel("WINNER: Horse X", this);
@@ -91,6 +108,11 @@ RaceDisplay::~RaceDisplay()
 		delete hNum[i];
 		delete hOdds[i];
     }
+	/*delete img [0];
+	delete img [1];
+	delete mov [0];
+	delete mov [1];
+	delete race;*/
 	//delete winBack;
 	//delete winNum;
 	//delete winName;
@@ -100,8 +122,9 @@ RaceDisplay::~RaceDisplay()
 }
 
 void RaceDisplay::resizeEvent(QResizeEvent * event){
-    int y = this->height()-40;
-	int x = this->width()-40;
+    int y = this->height()-120;//-40;
+	int X = this->width();
+	int x = X-40;
 	int yspc = NUM_HORSES_PER_RACE;
 
     std::cout << "y:" << y;
@@ -117,25 +140,29 @@ void RaceDisplay::resizeEvent(QResizeEvent * event){
 	hoddsFont.setPointSize(y/(2*yspc)*1.1);
 
     for (int i=0 ; i< NUM_HORSES_PER_RACE; i++){
-		hBack[i]->move(20,20+i*y/yspc);
+		hBack[i]->move(20,120+i*y/yspc);
 		hBack[i]->setFixedHeight(y/yspc);
 		hBack[i]->setFixedWidth(x);
 
-        hNum[i]->move(20,20+i*y/yspc);
+        hNum[i]->move(20,120+i*y/yspc);
 		hNum[i]->setMinimumWidth(x*3/4);
 		hNum[i]->setFixedHeight(y/(2*yspc)*.8);
 		hNum[i]->setFont(hnumFont);
 
-		hName[i]->move(40,20+qRound((i+0.4)*y/yspc));
+		hName[i]->move(40,120+qRound((i+0.4)*y/yspc));
 		hName[i]->setMinimumWidth(x*3/4);
 		hName[i]->setFont(hnameFont);
 		hName[i]->setFixedHeight(y/(2*yspc)*.8);
 
-		hOdds[i]->move(x*3/4,20+i*y/yspc);
+		hOdds[i]->move(x*3/4,120+i*y/yspc);
 		hOdds[i]->setFixedWidth(x/4);
 		hOdds[i]->setFont(hoddsFont);
 		hOdds[i]->setFixedHeight(y/yspc);
     }
+	race->move(X/2-160,10);
+	img[0]->setFixedSize(X/2-180,60);
+	img[1]->move(X/2+170,10);
+	img[1]->setFixedSize(X/2-180,60);
 	//hnameFont.setBold(true);
 	//hnumFont.setBold(true);
 
@@ -165,6 +192,7 @@ void RaceDisplay::timerEvent(QTimerEvent * event){
 	list<string> names;
 	vector<int> odds;
 	int winner;
+	int r;
 	err = getAllHorseNamesActive(&names,&sock);
 	if (err == HR_SUCCESS && getAllHorseOddsActive(&odds,&sock)==HR_SUCCESS){
 		int i=0;
@@ -182,10 +210,29 @@ void RaceDisplay::timerEvent(QTimerEvent * event){
 			i++;
 		}
 	}
+	else if (err == HR_NO_ACTIVE_RACE){
+		for (int i=0; i< NUM_HORSES_PER_RACE; i++){
+			if (i%2)
+				hBack[i]->setStyleSheet("QLabel { background-color : #CCFFFF; }");
+			else
+				hBack[i]->setStyleSheet("QLabel { background-color : #FFFF99; }");
+			hName[i]->setText("");
+			hOdds[i]->setText("");
+		}
+	}
+
 	err = getWinningHorseActive(&winner, &sock);
 	if (err == HR_SUCCESS && winner >= 0)
 		hBack[winner]->setStyleSheet("QLabel { background-color : yellow;}");
 
+	err = getActiveRace(&r,&sock);
+	if (r==-1)
+		race->setText("");
+	else{
+		r++;
+		QString rs = "Race " + QString::fromStdString(std::to_string(r));
+		race->setText(rs);
+	}
 
 }
 

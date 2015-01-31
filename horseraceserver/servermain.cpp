@@ -299,7 +299,7 @@ void handleRequest(string req, Horserace * hr, SOCKET* sock){
 			}
 			hr->unlock();
 			if (err == HR_SUCCESS){
-				buf = "OK " + std::to_string(NUM_HORSES_PER_RACE);
+				buf = "OK " + std::to_string(NUM_HORSES_PER_RACE) + "\n";
 				send(*sock, buf.c_str(), buf.length(),0);
 				for (auto& x : hnames){
 					buf = x + "\n";
@@ -345,7 +345,7 @@ void handleRequest(string req, Horserace * hr, SOCKET* sock){
 			}
 			hr->unlock();
 			if (err == HR_SUCCESS){
-				buf = "OK " + std::to_string(NUM_HORSES_PER_RACE);
+				buf = "OK " + std::to_string(NUM_HORSES_PER_RACE) + "\n";
 				send(*sock, buf.c_str(), buf.length(),0);
 				for (auto& x : odds){
 					buf = std::to_string(x) + "\n";
@@ -381,7 +381,7 @@ void handleRequest(string req, Horserace * hr, SOCKET* sock){
 			}
 			hr->unlock();
 			if (err == HR_SUCCESS){
-				buf = "OK " + std::to_string(NUM_HORSES_PER_RACE);
+				buf = "OK " + std::to_string(NUM_HORSES_PER_RACE) + "\n";
 				send(*sock, buf.c_str(), buf.length(),0);
 				for (auto& x : odds){
 					buf = std::to_string(x) + "\n";
@@ -632,7 +632,7 @@ void writePayoutListToFile(Horserace * hr, int r,string fname){
 	if (r>=0){
 		list<Better> betters = hr->getBetterList(r);
 		if (fname == "")
-			fname = PAYOUT_PREFIX + std::to_string(r) + PAYOUT_SUFFIX;
+			fname = PAYOUT_PREFIX + std::to_string(r+1) + PAYOUT_SUFFIX;
 		paylk[r].lock();
 		fb->open(fname,std::ios::out);
 		payfile << std::left << std::setw(35) << "Name" << "\t";
@@ -658,12 +658,12 @@ void writeBetListToFile(Horserace * hr, int r,string fname){
 	if (r>=0){
 		list<Better> betters = hr->getBetterList(r);
 		if (fname == "")
-			fname = BETLIST_PREFIX + std::to_string(r) + BETLIST_SUFFIX;
+			fname = BETLIST_PREFIX + std::to_string(r+1) + BETLIST_SUFFIX;
 		betlk[r].lock();
 		fb->open(fname,std::ios::out);
 		betfile << std::left << std::setw(35) << "Name" << "\t";
 		for (int i = 0 ; i < NUM_HORSES_PER_RACE; i++){
-			betfile << "Horse " << i << "  " ;
+			betfile << "Horse " << i+1 << "  " ;
 		}
 		betfile << endl;
 		for (auto& x: betters){

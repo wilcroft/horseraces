@@ -437,7 +437,10 @@ void RaceClientGUI::timerEvent(QTimerEvent *){
 void RaceClientGUI::changeActive(){
 	int r = activeRace->currentIndex();
 	socklock.lock();
-	setActiveRace(r-1,&sock);
+	if (r == 0)
+		setNoActiveRace(&sock);
+	else
+		setActiveRace(r-1,&sock);
 	socklock.unlock();
 }
 
@@ -492,6 +495,7 @@ void RaceClientGUI::setName(){
 	else
 		setHorseName(r-1,h,n.toStdString(),&sock);
 	socklock.unlock();
+	horseName->setModified(false);
 }
 void RaceClientGUI::pullTake(){
 	float f;
@@ -507,15 +511,17 @@ void RaceClientGUI::pullTake(){
 	housePct->setModified(false);
 }
 void RaceClientGUI::pullName(){
-	int r = horseRace->currentIndex();
-	int h = horseNum->currentIndex();
-	string n;
-	socklock.lock();
-	if (r == 0)
-		getHorseNameActive(h,&n,&sock);
-	else
-		getHorseName(r-1,h,&n,&sock);
-	socklock.unlock();
-	horseName->setText(QString::fromStdString(n));
-	horseName->setModified(false);
+	if (!horseName->isModified()){
+		int r = horseRace->currentIndex();
+		int h = horseNum->currentIndex();
+		string n;
+		socklock.lock();
+		if (r == 0)
+			getHorseNameActive(h,&n,&sock);
+		else
+			getHorseName(r-1,h,&n,&sock);
+		socklock.unlock();
+		horseName->setText(QString::fromStdString(n));
+		horseName->setModified(false);
+	}
 }

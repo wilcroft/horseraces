@@ -21,7 +21,7 @@ using std::cin;
 using std::string;
 using std::endl;
 
-#define DEBUG 1
+#define DEBUG 0
 #if DEBUG > 0
 #define DEBUG_MSG(str) do { std::cout << str << std::endl; } while( false )
 #else
