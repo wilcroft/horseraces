@@ -7,9 +7,9 @@ std::mutex paylk[NUM_RACES];
 bool thrdActv [NUMTHRDS];
 
 int main (void){
-
+#if defined(_WIN32) || defined(_WIN64)
 	WSADATA wsaData;
-
+#endif
 	int ret;
 	SOCKET listensocket = INVALID_SOCKET;
 	SOCKET * clientsocket;
@@ -18,7 +18,11 @@ int main (void){
 	getHorseNamesFromFile("horses.txt",hr);
 
 	//setup and create a socket for listening
+#if defined(_WIN32) || defined(_WIN64)
 	ret = createListenSocket(&listensocket, &wsaData);
+#elif defined (__linux__)
+	ret = createListenSocket(&listensocket);
+#endif
 	std::thread * clientThread [NUMTHRDS];
 
 	cout << "Set-up OK!" << endl;
@@ -82,12 +86,12 @@ int createListenSocket(SOCKET* sock, WSADATA* wsaData){
 	struct addrinfo hints;
 	int sockcount = 0;
 	(*sock) = INVALID_SOCKET;
-
+#if defined(_WIN32) || defined(_WIN64)
 	if (WSAStartup(MAKEWORD(2,2), wsaData) != 0){
 		std::cerr << "Startup Failed!" << endl;
 		return -1;
 	}
-
+#endif
 	ZeroMemory(&hints, sizeof(hints)); // dumb?
 	hints.ai_family = AF_INET;
 	hints.ai_socktype = SOCK_STREAM;
@@ -113,11 +117,11 @@ int createListenSocket(SOCKET* sock, WSADATA* wsaData){
 
 	DEBUG_MSG("Found " << sockcount << " addresses!");
 
-	int blks[4];
+	/*int blks[4];
 	for (int i=0; i<4; i++){
 		blks[i] = ((int)(result->ai_addr) >> 8*i) & 0xFF;
 	}
-	/*cout << "IP: " << result->ai_canonname << endl;
+	cout << "IP: " << result->ai_canonname << endl;
 	cout << "IP: " << blks[3] << ":" << blks[2] << ":" << blks[1] ;
 	cout << ":" << blks[0] << endl;
 	cout << "Port: " << PORT << endl;*/
@@ -130,7 +134,7 @@ int createListenSocket(SOCKET* sock, WSADATA* wsaData){
 		WSACleanup();
 		return -1;
 	}
-	
+
 	if (bind((*sock), result->ai_addr, (int)result->ai_addrlen) == SOCKET_ERROR) {
         std::cerr << "bind() failed! : " <<  WSAGetLastError() << endl;
 		freeaddrinfo(result);
@@ -138,25 +142,59 @@ int createListenSocket(SOCKET* sock, WSADATA* wsaData){
         return -1;
     }
 
-	freeaddrinfo(result);
-	
     char ac[80];
+#if defined(_WIN32) || defined(_WIN64)
     if (gethostname(ac, sizeof(ac)) == SOCKET_ERROR) {
         std::cerr << "Error " << WSAGetLastError() <<
                 " when getting local host name." << endl;
-        return 1;
+        return -1;
     }
     struct hostent *phe = gethostbyname(ac);
     if (phe == 0) {
         std::cerr << "Yow! Bad host lookup." << endl;
         return 1;
     }
-
+    for (int i=0; phe->h_addr_list[i] != nullptr; i++){
     struct in_addr addr;
-    memcpy(&addr, phe->h_addr_list[0], sizeof(struct in_addr));
-	cout << "IP: " << inet_ntoa(addr) << endl;
+    memcpy(&addr, phe->h_addr_list[i], sizeof(struct in_addr));
+
+	cout << "IP: " << inet_ntoa(addr) << endl;}
+#elif defined(__linux__)
+/*	cout << "IP: " << inet_ntoa(*(struct in_addr *)phe->h_addr) << endl;
+	cout << "IP: " << inet_ntoa(((struct sockaddr_in *)result->ai_addr)->sin_addr) << endl;
+
+    struct sockaddr_in name;
+    socklen_t socklen = sizeof (name);
+    getsockname (*sock,(sockaddr*)&name,&socklen);
+	cout << "IP: " << inet_ntoa(name.sin_addr) << endl;
+*/
+	struct ifaddrs * ifaddr, *ifa;
+
+	getifaddrs(&ifaddr);
+
+	for (ifa = ifaddr; ifa != nullptr ; ifa=ifa->ifa_next){
+        if (ifa->ifa_addr != nullptr)
+            switch (ifa->ifa_addr->sa_family){
+                case AF_INET:
+                    getnameinfo(ifa->ifa_addr, sizeof(struct sockaddr_in),ac,sizeof(ac),
+                                nullptr,0,NI_NUMERICHOST);
+                    if (strcmp(ac,"127.0.0.1")!=0 &&strcmp(ac,"0.0.0.0")!=0)
+                        cout << "IP: " << ac << endl;
+                    break;
+                case AF_INET6:
+                //    getnameinfo(ifa->ifa_addr, sizeof(struct sockaddr_in6),ac,sizeof(ac),
+                //                nullptr,0,NI_NUMERICHOST);
+                //    cout << "IP: " << ac << endl;
+                case AF_PACKET:
+                default:
+                ;
+
+            }
+    }
+#endif
 	cout << "Port: " << PORT << endl;
 
+	freeaddrinfo(result);
 	return 0;
 }
 
@@ -189,10 +227,10 @@ void handleClient(SOCKET* sock, int i, Horserace * hr){
 		}
 
 	}while (ret>0);
-	
+
 	//*(rv)=ret;
 
-	if (shutdown((*sock),SD_SEND) == SOCKET_ERROR){
+	if (shutdown((*sock),SD_BOTH) == SOCKET_ERROR){
 		iolk.lock();
 		std::cerr << "Shutdown failed! : " << WSAGetLastError() << endl;
 		iolk.unlock();
@@ -200,7 +238,7 @@ void handleClient(SOCKET* sock, int i, Horserace * hr){
 		WSACleanup();
 		//(*rv) = -1;
 	}
-	
+
 	closesocket((*sock));
 	delete sock;
 	thrdlk.lock();
@@ -215,7 +253,7 @@ list <string> getNamesFromFile(string s){
 
 	list <string> names;
 	char temp[BUFLEN];
-	
+
 	fb->open (s, std::ios::in);
 
 	if (fb->is_open()){
@@ -235,7 +273,7 @@ void getHorseNamesFromFile(string s, Horserace * hr){
 
 	int i=0;
 	char temp[BUFLEN];
-	
+
 	fb->open (s, std::ios::in);
 
 	if (fb->is_open()){
@@ -287,7 +325,7 @@ void handleRequest(string req, Horserace * hr, SOCKET* sock){
 				send(*sock, buf.c_str(), buf.length(),0);
 				for (auto& x : hnames){
 					buf = x + "\n";
-					send(*sock, buf.c_str(), buf.length(),0);	
+					send(*sock, buf.c_str(), buf.length(),0);
 				}
 			}
 			else{
@@ -322,7 +360,7 @@ void handleRequest(string req, Horserace * hr, SOCKET* sock){
 				send(*sock, buf.c_str(), buf.length(),0);
 				for (auto& x : hnames){
 					buf = x + "\n";
-					send(*sock, buf.c_str(), buf.length(),0);	
+					send(*sock, buf.c_str(), buf.length(),0);
 				}
 			}
 			else{
@@ -346,7 +384,7 @@ void handleRequest(string req, Horserace * hr, SOCKET* sock){
 		send(*sock, buf.c_str(), buf.length(),0);
 		for (auto& x: names){
 			buf = x + "\n";
-			send(*sock, buf.c_str(), buf.length(),0);	
+			send(*sock, buf.c_str(), buf.length(),0);
 		}
 	}
 	else if (op == "GO"){
@@ -368,9 +406,9 @@ void handleRequest(string req, Horserace * hr, SOCKET* sock){
 				send(*sock, buf.c_str(), buf.length(),0);
 				for (auto& x : odds){
 					buf = std::to_string(x) + "\n";
-					send(*sock, buf.c_str(), buf.length(),0);	
+					send(*sock, buf.c_str(), buf.length(),0);
 				}
-				//	send(*sock, std::.c_str(), std::to_string(x).length(),0);	
+				//	send(*sock, std::.c_str(), std::to_string(x).length(),0);
 			}
 			else{
 				buf = "ER " + std::to_string(err);
@@ -404,7 +442,7 @@ void handleRequest(string req, Horserace * hr, SOCKET* sock){
 				send(*sock, buf.c_str(), buf.length(),0);
 				for (auto& x : odds){
 					buf = std::to_string(x) + "\n";
-					send(*sock, buf.c_str(), buf.length(),0);	
+					send(*sock, buf.c_str(), buf.length(),0);
 				}
 			}
 			else{
@@ -440,7 +478,7 @@ void handleRequest(string req, Horserace * hr, SOCKET* sock){
 				buf = "ER " + std::to_string(err);
 			send(*sock, buf.c_str(), buf.length(),0);
 		}
-	} 
+	}
 	else if (op == "Gw"){
 		enum HRErrorCode err;
 		int winnings = hr->getHouseWinningsActive(&err);
@@ -466,7 +504,7 @@ void handleRequest(string req, Horserace * hr, SOCKET* sock){
 				buf = "ER " + std::to_string(err);
 			send(*sock, buf.c_str(), buf.length(),0);
 		}
-	} 
+	}
 	else if (op == "Gt"){
 		enum HRErrorCode err;
 		float w = hr->getHouseTakeActive(&err);
@@ -663,7 +701,7 @@ void writePayoutListToFile(Horserace * hr, int r,string fname){
 				payfile << "$" << std::to_string(x.getPayout()) << endl;
 			}
 		}
-		payfile << endl; 
+		payfile << endl;
 		payfile << std::right << std::setw(35) << "House Winnings: ";
 		payfile << "$" << std::to_string(hr->getHouseWinnings(r)) << endl;
 		fb->close();

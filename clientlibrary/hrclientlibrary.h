@@ -6,12 +6,20 @@
 #include <vector>
 
 #if defined(_WIN32) || defined(_WIN64)
-#ifndef WIN32_LEAN_AND_MEAN
-#define WIN32_LEAN_AND_MEAN
-#endif
-#include <WinSock2.h>
-#include <WS2tcpip.h>
-#pragma comment(lib, "ws2_32.lib")
+	#ifndef WIN32_LEAN_AND_MEAN
+	#define WIN32_LEAN_AND_MEAN
+	#endif
+	#include <WinSock2.h>
+	#include <WS2tcpip.h>
+	#pragma comment(lib, "ws2_32.lib")
+#elif defined (__linux__)
+	#include <sys/types.h> 
+	#include <sys/socket.h> 
+	#include <netdb.h>
+	typedef int SOCKET;
+	typedef void WSADATA;
+	#define INVALID_SOCKET 0
+	#define SOCKET_ERROR -1
 #endif
 
 #include "../horseraces/constants.h"
@@ -61,7 +69,8 @@ enum HRErrorCode setNoActiveRace(SOCKET * sock);
 enum HRErrorCode setWinningHorse(int r, int h, SOCKET * sock);
 enum HRErrorCode setWinningHorseActive(int h, SOCKET * sock);
 
-int createClientSocket(string addr, string port, SOCKET* sock, WSADATA* wsaData);
+int createClientSocket(string addr, string port, SOCKET* sock, WSADATA* wsaData=nullptr);
+enum HRErrorCode closeClientSocket(SOCKET* sock);
 
 int lineCount(string s, char c = '\n');
 #endif

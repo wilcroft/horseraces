@@ -10,6 +10,10 @@
 #include "horse.h"
 #include "better.h"
 
+#if defined(__linux__)
+#include <math.h>
+#endif
+
 #define DEFAULT_HOUSEPCT 0.15
 
 //using namespace std;
@@ -19,7 +23,7 @@ using std::list;
 using std::string;
 
 class Race{
-	
+
 		Horse * horses[NUM_HORSES_PER_RACE];
 		long totalBets;
 		float houseTake;
@@ -27,7 +31,7 @@ class Race{
 		int houseWinnings;
 		list <Better> betters;
 		std::mutex mtx;
-		
+
 	public:
 		Race();
 		Race(list <string>);
@@ -45,6 +49,6 @@ class Race{
 		int getHorseOdds(int, enum HRErrorCode * err = nullptr);
 		enum HRErrorCode addBet(string, int, int);
 		int getHouseWinnings();
-		
+
 };
 #endif

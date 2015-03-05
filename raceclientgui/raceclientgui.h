@@ -114,8 +114,9 @@ class RaceClientGUI : public QMainWindow
 	int oktimer;
 
 	SOCKET sock;
+#if defined(_WIN32) || defined(_WIN64)
 	WSADATA wsaData;
-
+#endif
 public:
 	RaceClientGUI(QString ip = "", QString port = "", QWidget *parent = 0);
 	~RaceClientGUI();

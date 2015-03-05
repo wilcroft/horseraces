@@ -5,6 +5,8 @@
 #include <thread>
 #include <fstream>
 
+#define NEEDCLI
+
 #include "horserace.h"
 #include "better.h"
 #include "constants.h"

@@ -43,8 +43,10 @@ class RaceDisplay : public QMainWindow
 	QMovie * mov [2];
 
 	SOCKET sock;
-	WSADATA wsaData;
 
+#if defined(_WIN32) || defined(_WIN64)
+	WSADATA wsaData;
+#endif
 	int timerid;
 
 public:

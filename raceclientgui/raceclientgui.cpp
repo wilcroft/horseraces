@@ -301,7 +301,11 @@ RaceClientGUI::RaceClientGUI(QString ip, QString port,QWidget *parent)
 	participCompl->setCaseSensitivity(Qt::CaseInsensitive);
 	betName->setCompleter(participCompl);*/
 
-	int socksetup = createClientSocket(ip.toStdString(),port.toStdString(), &sock, &wsaData);
+#if defined(_WIN32) || defined(_WIN64)
+    int socksetup = createClientSocket(ip.toStdString(),port.toStdString(), &sock, &wsaData);
+#elif defined (__linux__)
+    int socksetup = createClientSocket(ip.toStdString(),port.toStdString(), &sock);
+#endif
 	if (socksetup != 0){
 		QMessageBox errmsg;
 		errmsg.setText("Error: Could not connect to server!");
@@ -387,8 +391,7 @@ RaceClientGUI::~RaceClientGUI()
 
 	delete ui;
 
-	closesocket(sock);
-	WSACleanup();
+	closeClientSocket(&sock);
 
 }
 

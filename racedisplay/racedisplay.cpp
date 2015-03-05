@@ -84,7 +84,12 @@ RaceDisplay::RaceDisplay(QString addr, QString p, QWidget *parent) :
     //connect (u)
 
 	//Set up socket connection
-	int socksetup = createClientSocket(ip.toStdString(),port.toStdString(), &sock, &wsaData);
+
+#if defined(_WIN32) || defined(_WIN64)
+    int socksetup = createClientSocket(ip.toStdString(),port.toStdString(), &sock, &wsaData);
+#elif defined (__linux__)
+    int socksetup = createClientSocket(ip.toStdString(),port.toStdString(), &sock);
+#endif
 	if (socksetup != 0){
 		QMessageBox errmsg;
 		errmsg.setText("Error: Could not connect to server!");
@@ -117,8 +122,9 @@ RaceDisplay::~RaceDisplay()
 	//delete winNum;
 	//delete winName;
 	//delete winOdds;
-	closesocket(sock);
-	WSACleanup();
+    //closesocket(sock);
+    //WSACleanup();
+    closeClientSocket(&sock);
 }
 
 void RaceDisplay::resizeEvent(QResizeEvent * event){
@@ -230,7 +236,7 @@ void RaceDisplay::timerEvent(QTimerEvent * event){
 		race->setText("");
 	else{
 		r++;
-		QString rs = "Race " + QString::fromStdString(std::to_string(r));
+        QString rs = "Race " + QString::fromStdString(std::to_string(r));
 		race->setText(rs);
 	}
 

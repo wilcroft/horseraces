@@ -1,5 +1,10 @@
 #include "hrclientlibrary.h"
 
+#if defined (__linux__)
+	#define WSACleanup() 
+	#define WSAGetLastError() ""
+	#define closesocket(p) close (p)
+#endif
 //Get Functions
 /************************************
  * getActiveRace()
@@ -15,6 +20,7 @@
 enum HRErrorCode getActiveRace(int* r, SOCKET * sock){
 	string buf;
 	char recvbuf [BUFLEN];
+	ZeroMemory(recvbuf,BUFLEN);
 	buf = "GA";
 	send(*sock, buf.c_str(), buf.length(),0);
 	recv(*sock, recvbuf,BUFLEN,0);
@@ -478,15 +484,16 @@ enum HRErrorCode setWinningHorseActive(int h, SOCKET * sock){
 int createClientSocket(string addr, string port, SOCKET* sock, WSADATA* wsaData){
 	(*sock) = INVALID_SOCKET;
 
+
 	struct addrinfo * result = NULL,
 					* ptr = NULL,
 					hints;
-
+#if defined(_WIN32) || defined(_WIN64)
 	if (WSAStartup(MAKEWORD(2,2), wsaData) != 0){
 		std:: cerr << "Startup failed! " << endl;
 		return -1;
 	}
-
+#endif
 	ZeroMemory(&hints, sizeof(hints));
 	hints.ai_family = AF_UNSPEC;
 	hints.ai_socktype = SOCK_STREAM;
@@ -523,6 +530,11 @@ int createClientSocket(string addr, string port, SOCKET* sock, WSADATA* wsaData)
 
 	return 0;
 
+}
+enum HRErrorCode closeClientSocket(SOCKET* sock){
+	closesocket(*sock);
+	WSACleanup();
+	return HR_SUCCESS;
 }
 
 int lineCount(string s, char c){
