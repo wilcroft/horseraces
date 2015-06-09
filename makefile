@@ -1,4 +1,4 @@
-export CFLAGS = --std=c++11
+export CFLAGS := --std=c++11
 export CC = g++
 projectdir := $(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
 export objectdir = $(projectdir)/objs
@@ -6,10 +6,8 @@ export installdir = $(projectdir)/bin
 srcdirs = horseraces clientlibrary horseraceserver raceclientgui racedisplay
 all: dirs $(srcdirs)
 
-debug: debug-flags all-debug
-
-debug-flags:
-CFLAGS += -g
+debug: CFLAGS += -g
+debug: all-debug
 
 all-debug: dirs $(srcdirs)
 
@@ -40,6 +38,8 @@ racedisplay: horseraces clientlibrary
 clientlibrary: 
 	$(MAKE) -C clientlibrary
 #	cd $@ && $(MAKE)
+
+
 clean:
 	$(MAKE) -C horseraces clean
 	$(MAKE) -C horseraceserver clean
