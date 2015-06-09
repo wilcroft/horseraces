@@ -1,0 +1,26 @@
+<UI version="4.0" >
+ <class>RaceServerGUIClass</class>
+ <widget class="QMainWindow" name="RaceServerGUI" >
+  <property name="objectName" >
+   <string notr="true">RaceServerGUI</string>
+  </property>
+  <property name="geometry" >
+   <rect>
+	<x>0</x>
+	<y>0</y>
+	<width>600</width>
+	<height>400</height>
+   </rect>
+  </property>
+  <property name="windowTitle" >
+   <string>RaceServerGUI</string>
+  </property>
+  <widget class="QWidget" name="centralWidget" />
+ </widget>
+ <layoutDefault spacing="6" margin="11" />
+ <pixmapfunction></pixmapfunction>
+ <resources>
+   <include location="raceservergui.qrc"/>
+ </resources>
+ <connections/>
+</UI>

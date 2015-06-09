@@ -21,6 +21,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "racedisplay", "racedisplay\
 		{F6185B10-E84A-4012-806A-34CA35C17552} = {F6185B10-E84A-4012-806A-34CA35C17552}
 	EndProjectSection
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "raceservergui", "raceservergui\raceservergui.vcxproj", "{AE372A27-D298-449E-86E5-0DCF7CD6163B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -69,6 +71,12 @@ Global
 		{B12702AD-ABFB-343A-A199-8E24837244A3}.Release|Win32.ActiveCfg = Release|Win32
 		{B12702AD-ABFB-343A-A199-8E24837244A3}.Release|Win32.Build.0 = Release|Win32
 		{B12702AD-ABFB-343A-A199-8E24837244A3}.Release|Win32.Deploy.0 = Release|Win32
+		{AE372A27-D298-449E-86E5-0DCF7CD6163B}.Debug|Win32.ActiveCfg = Debug|Win32
+		{AE372A27-D298-449E-86E5-0DCF7CD6163B}.Debug|Win32.Build.0 = Debug|Win32
+		{AE372A27-D298-449E-86E5-0DCF7CD6163B}.Debug|Win32.Deploy.0 = Debug|Win32
+		{AE372A27-D298-449E-86E5-0DCF7CD6163B}.Release|Win32.ActiveCfg = Release|Win32
+		{AE372A27-D298-449E-86E5-0DCF7CD6163B}.Release|Win32.Build.0 = Release|Win32
+		{AE372A27-D298-449E-86E5-0DCF7CD6163B}.Release|Win32.Deploy.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

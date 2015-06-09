@@ -41,6 +41,9 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="servermain.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="..\horseraces\better.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -54,9 +57,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\horseraces\race.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="servermain.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
