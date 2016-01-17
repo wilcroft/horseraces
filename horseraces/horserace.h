@@ -30,6 +30,7 @@ class Horserace{
 		void unlock();
 		void addParticipant(string);
 		list<string> getParticipants ();
+		enum HRErrorCode editParticipant(string,string);
 		enum HRErrorCode setActiveRace(int);
 		int getActiveRace();
 		void setNoActiveRace();
@@ -46,6 +47,7 @@ class Horserace{
 		float getHouseTakeActive (enum HRErrorCode * err = nullptr);
 		int getHouseWinningsActive (enum HRErrorCode * err = nullptr);
 		enum HRErrorCode addBetActive(string, int, int);
+		enum HRErrorCode setBetActive(string, int, int);
 		list <Better> getBetterListActive(enum HRErrorCode * err = nullptr);
 
 		enum HRErrorCode setHorseName(int,int, string);
@@ -58,6 +60,7 @@ class Horserace{
 		float getHouseTake (int, enum HRErrorCode * err = nullptr);
 		int getHouseWinnings (int, enum HRErrorCode * err = nullptr);
 		enum HRErrorCode addBet(int,string,int,int);
+		enum HRErrorCode setBet(int,string,int,int);
 		list <Better> getBetterList(int, enum HRErrorCode * err = nullptr);
 		
 

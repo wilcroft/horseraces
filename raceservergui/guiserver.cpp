@@ -7,6 +7,9 @@ std::mutex betlk[NUM_RACES];
 std::mutex paylk[NUM_RACES];
 bool thrdActv [NUMTHRDS];
 std::string serverIP;
+std::ostream logstream (nullptr);
+std::ostream errstream (nullptr);
+
 
 void serverFunc(bool * isActive){//, std::iostream * serverMsgs){
 	(*isActive) = false;
@@ -28,7 +31,7 @@ void serverFunc(bool * isActive){//, std::iostream * serverMsgs){
 #endif
 	std::thread * clientThread [NUMTHRDS];
 
-	cout << "Set-up OK!" << endl;
+	DBG_MSG("Set-up OK!");
 
 //	SERVER_LOG("Set-up OK!");
 
@@ -40,7 +43,7 @@ void serverFunc(bool * isActive){//, std::iostream * serverMsgs){
 		//return -1;
 		return;
 	}
-	cout << "Waiting for connection" << endl;
+	LOG_MSG("Waiting for connection");
 
 	(*isActive) = true;
 	//Loop to listen for new connections
@@ -49,16 +52,14 @@ void serverFunc(bool * isActive){//, std::iostream * serverMsgs){
 		(*clientsocket) = INVALID_SOCKET;
 		(*clientsocket) = accept(listensocket, nullptr, nullptr);
 		if ((*clientsocket) == INVALID_SOCKET){
-			std::cerr << "accept() failed!! : " << WSAGetLastError() << endl;
+			ERR_MSG( "accept() failed!! : " << WSAGetLastError());
 			closesocket(listensocket);
 			WSACleanup();
 			//return -1;
 			return;
 		}
 
-		iolk.lock();
-		cout << "Connection recieved!" << endl;
-		iolk.unlock();
+		LOG_MSG( "Connection recieved!");
 
 		if (ret !=0 ){
 			cin.sync();
@@ -110,7 +111,7 @@ int createListenSocket(SOCKET* sock, WSADATA* wsaData){
 	(*sock) = INVALID_SOCKET;
 #if defined(_WIN32) || defined(_WIN64)
 	if (WSAStartup(MAKEWORD(2,2), wsaData) != 0){
-		std::cerr << "Startup Failed!" << endl;
+		ERR_MSG("Startup Failed!");
 		return -1;
 	}
 #endif
@@ -121,12 +122,12 @@ int createListenSocket(SOCKET* sock, WSADATA* wsaData){
 	hints.ai_flags = AI_PASSIVE;
 
 	if (getaddrinfo(nullptr,PORT,&hints,&result) != 0){
-		std::cerr << "getaddrinfo failed! " << endl;
+		ERR_MSG("getaddrinfo failed! ");
 		WSACleanup();
 		return -1;
 	}
 	if (result == nullptr){
-		std::cerr << " bad interface: " << endl;
+		ERR_MSG(" bad interface: " );
 		WSACleanup();
 		return -1;
 	}
@@ -137,7 +138,7 @@ int createListenSocket(SOCKET* sock, WSADATA* wsaData){
 		ptr = ptr->ai_next;
 	}
 
-	DEBUG_MSG("Found " << sockcount << " addresses!");
+	LOG_MSG("Found " << sockcount << " addresses!");
 
 	/*int blks[4];
 	for (int i=0; i<4; i++){
@@ -151,14 +152,14 @@ int createListenSocket(SOCKET* sock, WSADATA* wsaData){
 	(*sock) = socket(result->ai_family,result->ai_socktype, result->ai_protocol);
 
 	if ((*sock) == INVALID_SOCKET){
-		std::cerr << "socket() failed! : " << WSAGetLastError() << endl;
+		ERR_MSG( "socket() failed! : " << WSAGetLastError());
 		freeaddrinfo(result);
 		WSACleanup();
 		return -1;
 	}
 
 	if (bind((*sock), result->ai_addr, (int)result->ai_addrlen) == SOCKET_ERROR) {
-        std::cerr << "bind() failed! : " <<  WSAGetLastError() << endl;
+        ERR_MSG( "bind() failed! : " <<  WSAGetLastError());
 		freeaddrinfo(result);
         WSACleanup();
         return -1;
@@ -167,13 +168,12 @@ int createListenSocket(SOCKET* sock, WSADATA* wsaData){
     char ac[80];
 #if defined(_WIN32) || defined(_WIN64)
     if (gethostname(ac, sizeof(ac)) == SOCKET_ERROR) {
-        std::cerr << "Error " << WSAGetLastError() <<
-                " when getting local host name." << endl;
+        ERR_MSG( "Error " << WSAGetLastError() << " when getting local host name.");
         return -1;
     }
     struct hostent *phe = gethostbyname(ac);
     if (phe == 0) {
-        std::cerr << "Yow! Bad host lookup." << endl;
+        ERR_MSG("Yow! Bad host lookup.");
         return 1;
     }
     for (int i=0; phe->h_addr_list[i] != nullptr; i++){
@@ -181,7 +181,7 @@ int createListenSocket(SOCKET* sock, WSADATA* wsaData){
 		memcpy(&addr, phe->h_addr_list[i], sizeof(struct in_addr));
 
 		serverIP = inet_ntoa(addr);
-		cout << "IP: " << serverIP << endl;
+		LOG_MSG( "IP: " << serverIP);
 	}
 #elif defined(__linux__)
 /*	cout << "IP: " << inet_ntoa(*(struct in_addr *)phe->h_addr) << endl;
@@ -204,7 +204,7 @@ int createListenSocket(SOCKET* sock, WSADATA* wsaData){
                                 nullptr,0,NI_NUMERICHOST);
                     if (strcmp(ac,"127.0.0.1")!=0 &&strcmp(ac,"0.0.0.0")!=0){
 						serverIP = ac;
-                        cout << "IP: " << serverIP << endl;
+                        LOG_MSG("IP: " << serverIP);
 					}
                     break;
                 case AF_INET6:
@@ -218,7 +218,7 @@ int createListenSocket(SOCKET* sock, WSADATA* wsaData){
             }
     }
 #endif
-	cout << "Port: " << PORT << endl;
+	LOG_MSG( "Port: " << PORT);
 
 	freeaddrinfo(result);
 	return 0;
@@ -234,20 +234,14 @@ void handleClient(SOCKET* sock, int i, Horserace * hr){
 
 		if (ret > 0){
 			bufcpy = inbuf;
-			iolk.lock();
-			DEBUG_MSG("Recieved Message (" << strlen(inbuf) << ") : \"" << bufcpy << "\"");
-			iolk.unlock();
+			DBG_MSG("Recieved Message (" << strlen(inbuf) << ") : \"" << bufcpy << "\"");
 			handleRequest(bufcpy, hr, sock);
 		}
 		else if (ret == 0){
-			iolk.lock();
-			DEBUG_MSG("End of Connection.");
-			iolk.unlock();
+			LOG_MSG("End of Connection.");
 		}
 		else{
-			iolk.lock();
-			std::cerr << "recv() failed! : " << WSAGetLastError() << endl;
-			iolk.unlock();
+			ERR_MSG("recv() failed! : " << WSAGetLastError());
 			closesocket((*sock));
 			WSACleanup();
 		}
@@ -257,9 +251,7 @@ void handleClient(SOCKET* sock, int i, Horserace * hr){
 	//*(rv)=ret;
 
 	if (shutdown((*sock),SD_BOTH) == SOCKET_ERROR){
-		iolk.lock();
-		std::cerr << "Shutdown failed! : " << WSAGetLastError() << endl;
-		iolk.unlock();
+		ERR_MSG("Shutdown failed! : " << WSAGetLastError());
 		closesocket((*sock));
 		WSACleanup();
 		//(*rv) = -1;
@@ -317,9 +309,7 @@ void handleRequest(string req, Horserace * hr, SOCKET* sock){
 	//char retbuf [BUFLEN];
 	// store first to chars (OP code) to op
 	if (req.length()<2){
-		iolk.lock();
-		std::cerr << "INVALID OPERATION!!! "<< endl;
-		iolk.unlock();
+		ERR_MSG("INVALID OPERATION!!! ");
 		return;
 	}
 	string op = "";
@@ -577,8 +567,10 @@ void handleRequest(string req, Horserace * hr, SOCKET* sock){
 			req.pop_back();
 		}
 		err = hr->addBet(r,req,h,bet);
-		if (err == HR_SUCCESS)
+		if (err == HR_SUCCESS){
+			LOG_MSG("Add Bet: " << req << " ($" << bet << " Race " << r << ", Horse " << h << ")");
 			buf = "OK";
+		}
 		else
 			buf = "ER " + std::to_string(err);
 		send(*sock, buf.c_str(), buf.length(),0);
@@ -702,9 +694,7 @@ void handleRequest(string req, Horserace * hr, SOCKET* sock){
 			writePayoutListToFile(hr, r);
 	}
 	else{
-		iolk.lock();
-		std::cerr << "INVALID OPERATION!!! "<< endl;
-		iolk.unlock();
+		ERR_MSG( "INVALID OPERATION!!! ");
 	}
 }
 

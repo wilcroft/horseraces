@@ -77,7 +77,7 @@ enum HRErrorCode getAllHorseNamesActive(list<string> * s, SOCKET * sock){
 	buf = "Gh";
 	send(*sock, buf.c_str(), buf.length(), 0);
 	ZeroMemory(cbuf,BUFLEN*sizeof(char));
-	recv(*sock, cbuf, BUFLEN, 0);
+	if (recv(*sock, cbuf, BUFLEN, 0) <= 0) return HR_DISCONNECTED;
 	buf = cbuf;
 	linea = strToken(&buf, '\n');
 	if (strToken(&linea)=="OK"){

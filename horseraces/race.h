@@ -43,11 +43,13 @@ class Race{
 		enum HRErrorCode setHouseTake (float);
 		float getHouseTake();
 		void addBetter(string);
+		void editBetter(string, string);
 		list<Better> getBetterList();
 		enum HRErrorCode setHorseName (int, string);
 		string getHorseName (int, enum HRErrorCode * err = nullptr);
 		int getHorseOdds(int, enum HRErrorCode * err = nullptr);
 		enum HRErrorCode addBet(string, int, int);
+		enum HRErrorCode setBet(string, int, int);
 		int getHouseWinnings();
 
 };

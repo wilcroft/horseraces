@@ -58,6 +58,8 @@ extern std::mutex betlk[NUM_RACES];
 extern std::mutex paylk[NUM_RACES];
 extern bool thrdActv [NUMTHRDS];
 extern std::string serverIP;
+extern std::ostream logstream;
+extern std::ostream errstream;
 
 void serverFunc(bool * isActive);//, std::iostream * serverMsgs = nullptr);
 int createListenSocket(SOCKET* sock, WSADATA* wsaData=nullptr);
@@ -69,6 +71,20 @@ void writePayoutListToFile(Horserace * hr, int r,string fname = "");
 void writeBetListToFile(Horserace * hr, int r,string fname = "");
 
 
+#define LOGGING 1
+#if LOGGING > 0
+#define LOG_MSG(str) do {iolk.lock(); logstream << str << std::endl; iolk.unlock();} while( false )
+#define ERR_MSG(str) do {iolk.lock(); errstream << str << std::endl; iolk.unlock();} while( false )
+#define DBG_MSG(str) do { } while ( false )
+#elif LOGGING > 1
+#define LOG_MSG(str) do {iolk.lock(); logstream << str << std::endl; iolk.unlock();} while( false )
+#define ERR_MSG(str) do {iolk.lock(); errstream << str << std::endl; iolk.unlock();} while( false )
+#define DBG_MSG(str) do {iolk.lock(); logstream << str << std::endl; iolk.unlock();} while ( false )
+#else
+#define LOG_MSG(str) do { } while ( false )
+#define ERR_MSG(str) do { } while ( false )
+#define DBG_MSG(str) do { } while ( false )
+#endif
 
 //#define SERVER_LOG(str) if (serverMsgs != nullptr) { (*serverMsgs) << str << std::endl; } while( false )
 

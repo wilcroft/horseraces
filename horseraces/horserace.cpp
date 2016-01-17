@@ -45,6 +45,28 @@ list<string> Horserace::getParticipants(){
 	return participants;
 }
 
+enum HRErrorCode Horserace::editParticipant(string oldn,string newn){
+	bool found = false;
+	mtx.lock();
+	for (auto& x:participants){
+		if (x==oldn){
+			found = true;
+			for (int i=0; i< NUM_RACES; i++)
+				race[i]->editBetter(oldn, newn);
+			//change bets
+			x=newn;
+		}
+	}
+	if (!found){
+		mtx.unlock();
+		return HR_INVALID_NAME;
+	}
+	participants.sort();
+	participants.unique();
+	mtx.unlock();
+	return HR_SUCCESS;
+}
+
 enum HRErrorCode Horserace::setActiveRace(int x){
 	if (x < 0 || x >= NUM_RACES){
 		return HR_INVALID_RACE;
@@ -172,6 +194,12 @@ enum HRErrorCode Horserace::addBetActive(string name, int h, int bet){
 	return addBet(activeRace,name,h,bet);
 }
 
+enum HRErrorCode Horserace::setBetActive(string name, int h, int bet){
+	if (activeRace == -1)
+		return HR_NO_ACTIVE_RACE;
+	return setBet(activeRace,name,h,bet);
+}
+
 list<Better> Horserace::getBetterListActive(enum HRErrorCode * err){
 	if (activeRace == -1){
 		if (err != nullptr)
@@ -281,6 +309,19 @@ enum HRErrorCode Horserace::addBet(int r, string name, int h, int bet){
 	if (iter == participants.end()) addParticipant(name);
 
 	return race[r]->addBet(name, h, bet);		
+}
+
+enum HRErrorCode Horserace::setBet(int r, string name, int h, int bet){
+	if (r < 0 || r >= NUM_RACES)
+		return HR_INVALID_RACE;
+
+	list<string>::iterator iter;
+
+	iter=participants.begin();
+	while (iter!=participants.end() && *iter!=name) iter++;
+	if (iter == participants.end()) addParticipant(name);
+
+	return race[r]->setBet(name, h, bet);
 }
 
 list<Better> Horserace::getBetterList(int r, enum HRErrorCode * err){

@@ -16,8 +16,11 @@ RaceServerGUI::RaceServerGUI(QWidget *parent)
 	serverlog = new QTextDocument(serverlogwindow);
 	serverlogwindow->setDocument(serverlog);
 
-	logStream = new QDebugStream(std::cout,serverlogwindow, Qt::white);
-	errStream = new QDebugStream(std::cerr,serverlogwindow, Qt::red);
+	logStream = new QDebugStream(logstream,serverlogwindow, Qt::white);
+	errStream = new QDebugStream(errstream,serverlogwindow, Qt::red);
+
+	connect (serverlogwindow, SIGNAL(textChanged()), this, SLOT(scrollToBottom()));
+	connect (this, SIGNAL(doScroll(int)), serverlogwindow->verticalScrollBar(), SLOT(setValue(int)));
 
 //	std::cout << "Test cout!" << std::endl;
 //	std::cerr << "Test cerr!" << std::endl;
@@ -38,24 +41,39 @@ RaceServerGUI::RaceServerGUI(QWidget *parent)
 
 	while (!isServerActive);
 
+	connect (tabgroup,SIGNAL(currentChanged(int)),this,SLOT(tabChanged(int)));
+
 	//Tab 0 - Server Status/Info
-	tabgroup->setTabText(0,"Server Info");
+	tabgroup->setTabText(STATUSTAB,"Server Info");
 
+	// Tab 1 - Participant List
+	tabgroup->setTabText(PEOPLETAB,"Participants");
+
+	partRefresh = new QPushButton(tab[PEOPLETAB]);
+	partRefresh->setIcon(QIcon::fromTheme("view-refresh",QIcon("view-refresh.png")));
+	partRefresh->move(40,60);
+
+	partList = new QListWidget(tab[PEOPLETAB]);
+	partList->setFixedSize(400,560);
+	partList->move(100,20);
 	
-	//Tab 3 - Server Status/Info
-	tabgroup->setTabText(3,"Bets");
+	connect(partRefresh,SIGNAL(clicked()), this, SLOT(updatePartTable()));
+	connect(partList,SIGNAL(itemChanged(QListWidgetItem *)), this, SLOT(editParticipant(QListWidgetItem *)));
 
-	betRaceSelect = new QComboBox(tab[3]);
+	//Tab 3 - Bets
+	tabgroup->setTabText(BETTAB,"Bets");
+
+	betRaceSelect = new QComboBox(tab[BETTAB]);
 	betRaceSelect->move(20,20);
 	for (int i=0; i<NUM_RACES; i++){
 		betRaceSelect->addItem("Race " + QString::number(i+1));
 	}
 
-	betRefresh = new QPushButton(tab[3]);
+	betRefresh = new QPushButton(tab[BETTAB]);
 	betRefresh->setIcon(QIcon::fromTheme("view-refresh",QIcon("view-refresh.png")));
 	betRefresh->move(40,60);
 
-	betTable = new QTableWidget(tab[3]);
+	betTable = new QTableWidget(tab[BETTAB]);
 	betTable->move(100,20);
 	betTable->setFixedSize(800,560);
 
@@ -63,9 +81,33 @@ RaceServerGUI::RaceServerGUI(QWidget *parent)
 	betTable->setRowCount(participants.size());
 	betTable->setColumnCount(NUM_HORSES_PER_RACE);
 	betTable->setVerticalHeaderLabels(participants);
-
+	isLoadingBets = false;
+	
 	connect(betRaceSelect, SIGNAL(currentIndexChanged(int)), this, SLOT(updateBetTable()));
-	//QStringList
+	connect(betRefresh, SIGNAL(clicked()), this, SLOT(updateBetTable()));
+	connect(betTable, SIGNAL(cellChanged(int,int)), this, SLOT(editBet(int,int)));
+	
+	//Tab 4 - Payouts
+	tabgroup->setTabText(PAYOUTTAB,"Payouts");
+
+	winRaceSelect = new QComboBox(tab[PAYOUTTAB]);
+	winRaceSelect->move(20,20);
+	for (int i=0; i<NUM_RACES; i++){
+		winRaceSelect->addItem("Race " + QString::number(i+1));
+	}
+
+	winRefresh = new QPushButton(tab[PAYOUTTAB]);
+	winRefresh->setIcon(QIcon::fromTheme("view-refresh",QIcon("view-refresh.png")));
+	winRefresh->move(40,60);
+
+	winTable = new QTableWidget(tab[PAYOUTTAB]);
+	winTable->move(100,20);
+	winTable->setFixedSize(800,560);
+	winTable->setColumnCount(1);
+
+	connect(winRaceSelect, SIGNAL(currentIndexChanged(int)), this, SLOT(updateWinTable()));
+	connect(winRefresh, SIGNAL(clicked()), this, SLOT(updateWinTable()));
+
 
 }
 
@@ -82,7 +124,67 @@ RaceServerGUI::~RaceServerGUI()
 	delete tabgroup;
 }
 
+void RaceServerGUI::tabChanged(int t){
+	switch (t){
+	case STATUSTAB:
+		break;
+	case PEOPLETAB:
+		updatePartTable();
+		break;
+	case RACETAB:
+		break;
+	case BETTAB:
+		updateBetTable();
+		break;
+	case PAYOUTTAB:
+		updateWinTable();
+		break;
+	default:
+		;
+	}
+
+}
+
+void RaceServerGUI::scrollToBottom(){
+	//serverlogwindow->verticalScrollBar()->triggerAction(QAbstractSlider::SliderToMaximum);
+	loglk.lock();
+	emit doScroll(serverlogwindow->verticalScrollBar()->maximum());
+	loglk.unlock();
+}
+
+void RaceServerGUI::updatePartTable(){
+	plist = hr->getParticipants();
+	partList->clear();
+
+	QListWidgetItem * item  = new QListWidgetItem ("<New-Participant>");
+	item->setFlags(item->flags() | Qt::ItemIsEditable);
+	partList->addItem(item);
+	for (auto& x:plist){
+		item = new QListWidgetItem (QString::fromStdString(x));
+		item->setFlags(item->flags() | Qt::ItemIsEditable);
+		partList->addItem(item);
+	}
+	
+}
+
+void RaceServerGUI::editParticipant(QListWidgetItem * i){
+	int r = partList->row(i);
+	if (r == 0){
+		hr->addParticipant(i->text().toStdString());
+	}
+	else{
+		int j=1;
+		for (auto& x: plist){
+			if (j==r)
+				hr->editParticipant(x,i->text().toStdString());
+			j++;
+		}
+	}	
+	updatePartTable();
+}
+
 void RaceServerGUI::updateBetTable(){
+	isLoadingBets = true;
 	int r = betRaceSelect->currentIndex();
 
 	list <Better> betters = hr->getBetterList(r);
@@ -102,5 +204,55 @@ void RaceServerGUI::updateBetTable(){
 	}
 	betTable->setHorizontalHeaderLabels(horsenames);
 
-	
+	isLoadingBets = false;
 }
+
+void RaceServerGUI::editBet(int r, int c){
+	if (!isLoadingBets){
+		std::string p = betTable->verticalHeaderItem(r)->text().toStdString();
+
+		int bet = betTable->item(r,c)->text().toInt();
+
+		//std::cout << p.toStdString() << " bets $" << bet << " on Horse " << c+1 << std::endl;
+		logstream << "Changed bet for "  << p << " on Horse " << c+1 << " to $" << bet << std::endl;
+		if (hr->setBet(betRaceSelect->currentIndex(),p,c,bet) == HR_SUCCESS){
+			writeBetListToFile(hr,betRaceSelect->currentIndex());
+		}
+	}
+}
+
+void RaceServerGUI::editBet(QTableWidgetItem * i){
+	if (!isLoadingBets){
+		int r = betTable->row(i);
+		int c = betTable->column(i);
+		QString p = betTable->verticalHeaderItem(r)->text();
+
+		int bet = i->text().toInt();
+
+		logstream << p.toStdString() << " bets $" << bet << " on Horse " << c+1 << std::endl;
+	}
+}
+
+void RaceServerGUI::updateWinTable(){
+	int r = winRaceSelect->currentIndex();
+
+	std::list<Better> betters = hr->getBetterList(r);
+	std::list<Better> winners;
+	for (auto& x: betters)
+		if (x.getPayout() > 0) winners.push_back(x);
+
+	winTable->setRowCount(winners.size());
+	QStringList ql;
+	int j=0;
+	for (auto& x:winners){
+		ql.push_back(QString::fromStdString(x.getName()));
+		QTableWidgetItem * cell = new QTableWidgetItem(QString::number(x.getPayout()));
+		cell->setFlags(cell->flags() &  ~Qt::ItemIsEditable);
+		winTable->setItem(j,0,cell);
+		j++;
+	}
+	winTable->setHorizontalHeaderLabels(QStringList("Winnings"));
+	winTable->setVerticalHeaderLabels(ql);
+
+}
+

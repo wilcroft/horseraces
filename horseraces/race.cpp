@@ -108,6 +108,20 @@ void Race::addBetter(string x){
 	mtx.unlock();
 }
 
+void Race::editBetter(string oldn, string newn){
+	mtx.lock();
+	bool found=false;
+	for (auto& x:betters){
+		if (x.getName()==oldn){
+			found = true;
+			x.setName(newn);
+		}
+	}
+	if (!found) betters.emplace_back(newn);
+	betters.sort();
+	mtx.unlock();
+}
+
 list<Better> Race::getBetterList(){
 	list<Better> temp;
 	mtx.lock();
@@ -167,6 +181,35 @@ enum HRErrorCode Race::addBet(string name, int h, int bet){
 	iter->addBet(h,bet);
 	horses[h]->addBet(&(*iter),bet);
 	totalBets+=bet;
+	updateOdds();
+	mtx.unlock();
+	return HR_SUCCESS;
+
+}
+
+enum HRErrorCode Race::setBet(string name, int h, int bet){
+	if (h  < 0 || h >= NUM_HORSES_PER_RACE)
+		return HR_INVALID_HORSE;
+
+	if (bet < 0)
+		return HR_INVALID_BET;
+
+	list<Better>::iterator iter;
+	
+	mtx.lock();
+	iter = betters.begin();
+	while (iter != betters.end() && iter->getName()!=name) iter++;
+	if (iter == betters.end()){
+		betters.emplace_back(name);
+		betters.sort();
+		iter = betters.begin();
+		while (iter != betters.end() && iter->getName()!=name) iter++;
+	}
+
+	int oldbet = iter->getBet(h);
+	iter->addBet(h,bet-oldbet);
+	horses[h]->addBet(&(*iter),bet-oldbet);
+	totalBets+=bet-oldbet;
 	updateOdds();
 	mtx.unlock();
 	return HR_SUCCESS;
