@@ -11,6 +11,7 @@
 #include <qpushbutton.h>
 #include <qflags.h>
 #include <qlistwidget.h>
+#include <qlabel.h>
 
 #include <thread>
 
@@ -40,6 +41,7 @@ public slots:
 	void scrollToBottom();
 
 	//Status Tab
+	void updateStatus();
 
 	//Partipicant Tab
 	void updatePartTable();
@@ -69,6 +71,16 @@ private:
 	QTabWidget * tabgroup;
 	QWidget * tab [NUMTABS];
 
+	QLabel * statusIP;
+	QLabel * statusIPValue;
+	QLabel * statusPort;
+	QLabel * statusPortValue;
+	QLabel * statusTake;
+	QLabel * statusTakeValue;
+	QLabel * statusActive;
+	QLabel * statusActiveValue;
+	QPushButton * statusRefresh;
+
 	QListWidget * partList;
 	QPushButton * partRefresh;
 	std::list <std::string> plist;
@@ -83,7 +95,7 @@ private:
 	QPushButton * winRefresh;
 
 	std::thread * serverThread;
-	bool isServerActive;
+	volatile bool isServerActive;
 };
 
 #endif // RACESERVERGUI_H

@@ -37,7 +37,7 @@ RaceServerGUI::RaceServerGUI(QWidget *parent)
 	}
 
 	isServerActive = false;
-	serverThread = new std::thread(serverFunc,&isServerActive);
+	serverThread = new std::thread(serverFunc,&(bool)isServerActive);
 
 	while (!isServerActive);
 
@@ -45,6 +45,27 @@ RaceServerGUI::RaceServerGUI(QWidget *parent)
 
 	//Tab 0 - Server Status/Info
 	tabgroup->setTabText(STATUSTAB,"Server Info");
+	statusIP = new QLabel("IP Address:",tab[STATUSTAB]);
+	statusIPValue = new QLabel("-                        ",tab[STATUSTAB]);
+	statusPort = new QLabel("Port Num:",tab[STATUSTAB]);
+	statusPortValue = new QLabel("-                      ",tab[STATUSTAB]);
+	statusTake = new QLabel("House Take:",tab[STATUSTAB]);
+	statusTakeValue = new QLabel("-                      ",tab[STATUSTAB]);
+	statusActive = new QLabel("Active Race:",tab[STATUSTAB]);
+	statusActiveValue = new QLabel("-                    ",tab[STATUSTAB]);
+	statusIP->move(80,80);
+	statusIPValue->move(200,80);
+	statusPort->move(80,100);
+	statusPortValue->move(200,100);
+	statusTake->move(80,140);
+	statusTakeValue->move(200,140);
+	statusActive->move(80,120);
+	statusActiveValue->move(200,120);
+	statusRefresh = new QPushButton(tab[STATUSTAB]);
+	statusRefresh->setIcon(QIcon::fromTheme("view-refresh",QIcon("view-refresh.png")));
+	statusRefresh->move(40,60);
+	
+	connect(statusRefresh,SIGNAL(clicked()), this, SLOT(updateStatus()));
 
 	// Tab 1 - Participant List
 	tabgroup->setTabText(PEOPLETAB,"Participants");
@@ -120,13 +141,14 @@ RaceServerGUI::~RaceServerGUI()
 	delete serverlog;
 	delete serverlogwindow;
 
-	for (int i = 0; i<NUMTABS; i++) delete tab[i];
+	for (int i = NUMTABS-1; i>=0; i--) delete tab[i];
 	delete tabgroup;
 }
 
 void RaceServerGUI::tabChanged(int t){
 	switch (t){
 	case STATUSTAB:
+		updateStatus();
 		break;
 	case PEOPLETAB:
 		updatePartTable();
@@ -150,6 +172,13 @@ void RaceServerGUI::scrollToBottom(){
 	loglk.lock();
 	emit doScroll(serverlogwindow->verticalScrollBar()->maximum());
 	loglk.unlock();
+}
+
+void RaceServerGUI::updateStatus(){
+	statusTakeValue->setText("$"+QString::number(hr->getHouseWinningsAll()));
+	statusIPValue->setText(QString::fromStdString(serverIP));
+	statusPortValue->setText(QString::fromStdString(PORT));
+	statusActiveValue->setText("Race " + QString::number(hr->getActiveRace()));
 }
 
 void RaceServerGUI::updatePartTable(){
