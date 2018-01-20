@@ -157,3 +157,5 @@ $RECYCLE.BIN/
 
 # Mac desktop service store files
 .DS_Store
+/raceservergui/payout-race1.txt
+/raceservergui/betlist-race2.txt

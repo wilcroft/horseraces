@@ -429,11 +429,12 @@ void RaceClientGUI::timerEvent(QTimerEvent *event){
 		for (auto& x: p){
 			participants.push_back(QString::fromStdString(x));
 		}
-		delete participCompl;
-		participCompl = new QCompleter(participants, this);
-		participCompl->setCaseSensitivity(Qt::CaseInsensitive);
-		betName->setCompleter(participCompl);
-
+		if (QApplication::focusWidget() != betName) {
+			delete participCompl;
+			participCompl = new QCompleter(participants, this);
+			participCompl->setCaseSensitivity(Qt::CaseInsensitive);
+			betName->setCompleter(participCompl);
+		}
 		activeRace->setCurrentIndex(r+1);
 		totalEarnings->setText("Overall:       $" + QString::number(wAll));
 		totalActive->setText("Active Race: $" + QString::number(w));

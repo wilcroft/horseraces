@@ -22,7 +22,7 @@ enum HRErrorCode getActiveRace(int* r, SOCKET * sock){
 	char recvbuf [BUFLEN];
 	ZeroMemory(recvbuf,BUFLEN);
 	buf = "GA";
-	send(*sock, buf.c_str(), buf.length(),0);
+	send(*sock, buf.c_str(), (int)buf.length(),0);
 	recv(*sock, recvbuf,BUFLEN,0);
 	buf = recvbuf;
 	if (strToken(&buf)=="OK"){
@@ -48,7 +48,7 @@ enum HRErrorCode getAllHorseNames(int r, list<string> * s, SOCKET * sock){
 	list<string> names;
 	char cbuf [BUFLEN];
 	buf = "GH " + std::to_string(r);
-	send(*sock, buf.c_str(), buf.length(), 0);
+	send(*sock, buf.c_str(), (int)buf.length(), 0);
 	ZeroMemory(cbuf,BUFLEN*sizeof(char));
 	recv(*sock, cbuf, BUFLEN, 0);
 	buf = cbuf;
@@ -75,7 +75,7 @@ enum HRErrorCode getAllHorseNamesActive(list<string> * s, SOCKET * sock){
 	list<string> names;
 	char cbuf [BUFLEN];
 	buf = "Gh";
-	send(*sock, buf.c_str(), buf.length(), 0);
+	send(*sock, buf.c_str(), (int)buf.length(), 0);
 	ZeroMemory(cbuf,BUFLEN*sizeof(char));
 	if (recv(*sock, cbuf, BUFLEN, 0) <= 0) return HR_DISCONNECTED;
 	buf = cbuf;
@@ -102,7 +102,7 @@ enum HRErrorCode getHorseName(int r, int h, string * s, SOCKET * sock){
 	list<string> names;
 	char cbuf [BUFLEN];
 	buf = "GH " + std::to_string(r) + " " + std::to_string(h);
-	send(*sock, buf.c_str(), buf.length(), 0);
+	send(*sock, buf.c_str(), (int)buf.length(), 0);
 	ZeroMemory(cbuf,BUFLEN*sizeof(char));
 	recv(*sock, cbuf, BUFLEN, 0);
 	buf = cbuf;
@@ -118,7 +118,7 @@ enum HRErrorCode getHorseNameActive(int h, string * s, SOCKET * sock){
 	list<string> names;
 	char cbuf [BUFLEN];
 	buf = "Gh " + std::to_string(h);
-	send(*sock, buf.c_str(), buf.length(), 0);
+	send(*sock, buf.c_str(), (int)buf.length(), 0);
 	ZeroMemory(cbuf,BUFLEN*sizeof(char));
 	recv(*sock, cbuf, BUFLEN, 0);
 	buf = cbuf;
@@ -135,7 +135,7 @@ enum HRErrorCode getParticipantList(list<string> * s, SOCKET * sock){
 	list<string> names;
 	char cbuf [BUFLEN];
 	buf = "GP";
-	send(*sock, buf.c_str(), buf.length(), 0);
+	send(*sock, buf.c_str(), (int)buf.length(), 0);
 	ZeroMemory(cbuf,BUFLEN*sizeof(char));
 	recv(*sock, cbuf, BUFLEN, 0);
 	buf = cbuf;
@@ -163,7 +163,7 @@ enum HRErrorCode getAllHorseOdds(int r, vector<int> * o, SOCKET * sock){
 	char cbuf [BUFLEN];
 	ZeroMemory(cbuf,BUFLEN*sizeof(char));
 	buf = "GO " + std::to_string(r);
-	send(*sock, buf.c_str(), buf.length(), 0);
+	send(*sock, buf.c_str(), (int)buf.length(), 0);
 	recv(*sock, cbuf, BUFLEN, 0);
 	buf = cbuf;
 	if (strToken(&buf)=="OK"){
@@ -190,7 +190,7 @@ enum HRErrorCode getAllHorseOddsActive (vector<int>* o, SOCKET * sock){
 	char cbuf [BUFLEN];
 	ZeroMemory(cbuf,BUFLEN*sizeof(char));
 	buf = "Go";
-	send(*sock, buf.c_str(), buf.length(), 0);
+	send(*sock, buf.c_str(), (int)buf.length(), 0);
 	recv(*sock, cbuf, BUFLEN, 0);
 	buf = cbuf;
 	linea = strToken(&buf, '\n');
@@ -233,7 +233,7 @@ enum HRErrorCode getHouseWinnings(int r, int * w, SOCKET * sock){
 	char cbuf [BUFLEN];
 	ZeroMemory(cbuf,BUFLEN*sizeof(char));
 	buf = "GW " + std::to_string(r);
-	send(*sock, buf.c_str(), buf.length(), 0);
+	send(*sock, buf.c_str(), (int)buf.length(), 0);
 	recv(*sock, cbuf, BUFLEN, 0);
 	buf = cbuf;
 	if (strToken(&buf)=="OK"){
@@ -248,7 +248,7 @@ enum HRErrorCode getHouseWinningsActive(int * w, SOCKET * sock){
 	char cbuf [BUFLEN];
 	ZeroMemory(cbuf,BUFLEN*sizeof(char));
 	buf = "Gw";
-	send(*sock, buf.c_str(), buf.length(), 0);
+	send(*sock, buf.c_str(), (int)buf.length(), 0);
 	recv(*sock, cbuf, BUFLEN, 0);
 	buf = cbuf;
 	if (strToken(&buf)=="OK"){
@@ -263,7 +263,7 @@ enum HRErrorCode getAllHouseWinnings(int * w, SOCKET * sock){
 	char cbuf [BUFLEN];
 	ZeroMemory(cbuf,BUFLEN*sizeof(char));
 	buf = "GW";
-	send(*sock, buf.c_str(), buf.length(), 0);
+	send(*sock, buf.c_str(), (int)buf.length(), 0);
 	recv(*sock, cbuf, BUFLEN, 0);
 	buf = cbuf;
 	if (strToken(&buf)=="OK"){
@@ -278,7 +278,7 @@ enum HRErrorCode getHouseTakePct(int r, float * t, SOCKET * sock){
 	char cbuf [BUFLEN];
 	ZeroMemory(cbuf,BUFLEN*sizeof(char));
 	buf = "GT " + std::to_string(r);
-	send(*sock, buf.c_str(), buf.length(), 0);
+	send(*sock, buf.c_str(), (int)buf.length(), 0);
 	recv(*sock, cbuf, BUFLEN, 0);
 	buf = cbuf;
 	if (strToken(&buf)=="OK"){
@@ -293,7 +293,7 @@ enum HRErrorCode getHouseTakePctActive(float * t, SOCKET * sock){
 	char cbuf [BUFLEN];
 	ZeroMemory(cbuf,BUFLEN*sizeof(char));
 	buf = "Gt";
-	send(*sock, buf.c_str(), buf.length(), 0);
+	send(*sock, buf.c_str(), (int)buf.length(), 0);
 	recv(*sock, cbuf, BUFLEN, 0);
 	buf = cbuf;
 	if (strToken(&buf)=="OK"){
@@ -312,7 +312,7 @@ enum HRErrorCode getWinningHorseActive(int * h, SOCKET * sock){
 	char cbuf [BUFLEN];
 	ZeroMemory(cbuf,BUFLEN*sizeof(char));
 	buf = "Gv";
-	send(*sock, buf.c_str(), buf.length(), 0);
+	send(*sock, buf.c_str(), (int)buf.length(), 0);
 	recv(*sock, cbuf, BUFLEN, 0);
 	buf = cbuf;
 	if (strToken(&buf)=="OK"){
@@ -340,7 +340,7 @@ enum HRErrorCode addBet(int r, int h, int b, string n, SOCKET * sock){
 	ZeroMemory(cbuf,BUFLEN*sizeof(char));
 	buf = "AB " + std::to_string(r) + " " + std::to_string(h) + " " +
 		std::to_string(b) + " " + n;
-	send(*sock, buf.c_str(), buf.length(), 0);
+	send(*sock, buf.c_str(), (int)buf.length(), 0);
 	recv(*sock, cbuf, BUFLEN, 0);
 	buf = cbuf;
 	if (strToken(&buf)=="OK"){
@@ -359,7 +359,7 @@ enum HRErrorCode setHorseName(int r, int h, string n, SOCKET * sock){
 	char cbuf [BUFLEN];
 	ZeroMemory(cbuf,BUFLEN*sizeof(char));
 	buf = "SH " + std::to_string(r) + " " + std::to_string(h) + " " + n;
-	send(*sock, buf.c_str(), buf.length(), 0);
+	send(*sock, buf.c_str(), (int)buf.length(), 0);
 	recv(*sock, cbuf, BUFLEN, 0);
 	buf = cbuf;
 	if (strToken(&buf)=="OK"){
@@ -373,7 +373,7 @@ enum HRErrorCode setHorseNameActive(int h, string n, SOCKET * sock){
 	char cbuf [BUFLEN];
 	ZeroMemory(cbuf,BUFLEN*sizeof(char));
 	buf = "Sh " + std::to_string(h) + " " + n;
-	send(*sock, buf.c_str(), buf.length(), 0);
+	send(*sock, buf.c_str(), (int)buf.length(), 0);
 	recv(*sock, cbuf, BUFLEN, 0);
 	buf = cbuf;
 	if (strToken(&buf)=="OK"){
@@ -387,7 +387,7 @@ enum HRErrorCode setHouseTake(int r, float t, SOCKET * sock){
 	char cbuf [BUFLEN];
 	ZeroMemory(cbuf,BUFLEN*sizeof(char));
 	buf = "ST " + std::to_string(t) + " " + std::to_string(r);
-	send(*sock, buf.c_str(), buf.length(), 0);
+	send(*sock, buf.c_str(), (int)buf.length(), 0);
 	recv(*sock, cbuf, BUFLEN, 0);
 	buf = cbuf;
 	if (strToken(&buf)=="OK"){
@@ -401,7 +401,7 @@ enum HRErrorCode setAllHouseTake(float t, SOCKET * sock){
 	char cbuf [BUFLEN];
 	ZeroMemory(cbuf,BUFLEN*sizeof(char));
 	buf = "ST " + std::to_string(t);
-	send(*sock, buf.c_str(), buf.length(), 0);
+	send(*sock, buf.c_str(), (int)buf.length(), 0);
 	recv(*sock, cbuf, BUFLEN, 0);
 	buf = cbuf;
 	if (strToken(&buf)=="OK"){
@@ -415,7 +415,7 @@ enum HRErrorCode setHouseTakeActive(float t, SOCKET * sock){
 	char cbuf [BUFLEN];
 	ZeroMemory(cbuf,BUFLEN*sizeof(char));
 	buf = "St " + std::to_string(t);
-	send(*sock, buf.c_str(), buf.length(), 0);
+	send(*sock, buf.c_str(), (int)buf.length(), 0);
 	recv(*sock, cbuf, BUFLEN, 0);
 	buf = cbuf;
 	if (strToken(&buf)=="OK"){
@@ -429,7 +429,7 @@ enum HRErrorCode setActiveRace(int r, SOCKET * sock){
 	char cbuf [BUFLEN];
 	ZeroMemory(cbuf,BUFLEN*sizeof(char));
 	buf = "SA " + std::to_string(r);
-	send(*sock, buf.c_str(), buf.length(), 0);
+	send(*sock, buf.c_str(), (int)buf.length(), 0);
 	recv(*sock, cbuf, BUFLEN, 0);
 	buf = cbuf;
 	if (strToken(&buf)=="OK"){
@@ -443,7 +443,7 @@ enum HRErrorCode setNoActiveRace(SOCKET * sock){
 	char cbuf [BUFLEN];
 	ZeroMemory(cbuf,BUFLEN*sizeof(char));
 	buf = "SX";
-	send(*sock, buf.c_str(), buf.length(), 0);
+	send(*sock, buf.c_str(), (int)buf.length(), 0);
 	recv(*sock, cbuf, BUFLEN, 0);
 	buf = cbuf;
 	if (strToken(&buf)=="OK"){
@@ -457,7 +457,7 @@ enum HRErrorCode setWinningHorse(int r, int h, SOCKET * sock){
 	char cbuf [BUFLEN];
 	ZeroMemory(cbuf,BUFLEN*sizeof(char));
 	buf = "SV " + std::to_string(r) + " " + std::to_string(h);
-	send(*sock, buf.c_str(), buf.length(), 0);
+	send(*sock, buf.c_str(), (int)buf.length(), 0);
 	recv(*sock, cbuf, BUFLEN, 0);
 	buf = cbuf;
 	if (strToken(&buf)=="OK"){
@@ -471,7 +471,7 @@ enum HRErrorCode setWinningHorseActive(int h, SOCKET * sock){
 	char cbuf [BUFLEN];
 	ZeroMemory(cbuf,BUFLEN*sizeof(char));
 	buf = "Sv " + std::to_string(h);
-	send(*sock, buf.c_str(), buf.length(), 0);
+	send(*sock, buf.c_str(), (int)buf.length(), 0);
 	recv(*sock, cbuf, BUFLEN, 0);
 	buf = cbuf;
 	if (strToken(&buf)=="OK"){

@@ -149,16 +149,32 @@ int createListenSocket(SOCKET* sock, WSADATA* wsaData){
                 " when getting local host name." << endl;
         return -1;
     }
-    struct hostent *phe = gethostbyname(ac);
+    /*struct hostent *phe = gethostbyname(ac);
     if (phe == 0) {
         std::cerr << "Yow! Bad host lookup." << endl;
         return 1;
-    }
-    for (int i=0; phe->h_addr_list[i] != nullptr; i++){
-    struct in_addr addr;
-    memcpy(&addr, phe->h_addr_list[i], sizeof(struct in_addr));
+    }*/
+	addrinfo ** addrinfolist = nullptr;
+	PADDRINFOA  addrinfoptr;
+	if (getaddrinfo(ac, PORT, &hints, &addrinfoptr) != 0) {
+		std::cerr << "COuldn't find hostname " << ac << endl;
+		return 1;
+	}
 
-	cout << "IP: " << inet_ntoa(addr) << endl;}
+	for (addrinfo * ptr = addrinfoptr; ptr != nullptr; ptr = ptr->ai_next) {
+		struct in_addr addr;
+		struct sockaddr_in * saddr;
+		saddr = (struct sockaddr_in *) ptr->ai_addr;
+		memcpy(&addr, &(saddr->sin_addr), sizeof(struct in_addr));
+		InetNtop(AF_INET, &addr, ac, 80);
+		cout << "IP: " << ac << endl;
+	}
+/*    for (int i=0; phe->h_addr_list[i] != nullptr; i++){
+		struct in_addr addr;
+		memcpy(&addr, phe->h_addr_list[i], sizeof(struct in_addr));
+		cout << "IP: " << inet_ntoa(addr) << endl;
+	}*/
+
 #elif defined(__linux__)
 /*	cout << "IP: " << inet_ntoa(*(struct in_addr *)phe->h_addr) << endl;
 	cout << "IP: " << inet_ntoa(((struct sockaddr_in *)result->ai_addr)->sin_addr) << endl;
